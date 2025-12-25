@@ -1,0 +1,44 @@
+/* Cheerful theme for the bibliotheque app */
+
+/* Background */
+.root {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FFF9E6 0%, #FFF1F8 100%);
+}
+
+/* Title label */
+#titleLabel {
+    -fx-text-fill: #FF6F61;
+}
+
+/* General labels */
+.label {
+    -fx-text-fill: #37474F;
+    -fx-font-size: 12px;
+}
+
+/* Text fields */
+.text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 6;
+    -fx-border-color: rgba(255,111,97,0.15);
+    -fx-border-radius: 6;
+    -fx-padding: 6 8 6 8;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: linear-gradient(#FFD89B, #FFACB7);
+    -fx-text-fill: #3b2e2e;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-padding: 6 12 6 12;
+}
+.button:hover {
+    -fx-background-color: linear-gradient(#FFE6C2, #FFC9D0);
+}
+
+/* Status label */
+#statusLabel {
+    -fx-text-fill: #2E8B57;
+    -fx-font-weight: bold;
+}

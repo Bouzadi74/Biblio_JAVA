@@ -1,7 +1,7 @@
 package com.bibliotheque;
 
 import com.bibliotheque.controller.LivreController;
-import com.bibliotheque.service.BookServiceImpl;
+import com.bibliotheque.service.BibliothequeService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,11 +16,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/add_book.fxml"));
-        // simple controller factory to inject service instances
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LivreView.fxml"));
+
+        // Factory pour injecter le service métier
         loader.setControllerFactory(clazz -> {
             if (clazz == LivreController.class) {
-                return new LivreController(new BookServiceImpl());
+                return new LivreController(new BibliothequeService());
             }
             try {
                 return clazz.getDeclaredConstructor().newInstance();
@@ -30,8 +31,8 @@ public class Main extends Application {
         });
 
         Parent root = loader.load();
-        primaryStage.setTitle("Bibliotheque - Ajouter un Livre");
-        primaryStage.setScene(new Scene(root, 600, 350));
+        primaryStage.setTitle("Gestion de Bibliothèque");
+        primaryStage.setScene(new Scene(root, 900, 600));
         primaryStage.show();
     }
 }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.bibliotheque.controller.LivreController"
+      style="-fx-padding: 15; -fx-spacing: 10; -fx-background-color: #f5f5f5;">
+    
+    <!-- Titre -->
+    <Label text="Gestion des Livres" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #333;">
+        <VBox.margin>
+            <Insets bottom="10"/>
+        </VBox.margin>
+    </Label>
+
+    <!-- Section Formulaire -->
+    <HBox style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-color: white;" spacing="10">
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="ISBN:" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtIsbn" promptText="Entrez l'ISBN" style="-fx-padding: 5;"/>
+        </VBox>
+
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="Titre:" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtTitre" promptText="Entrez le titre" style="-fx-padding: 5;"/>
+        </VBox>
+
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="Auteur:" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtAuteur" promptText="Entrez l'auteur" style="-fx-padding: 5;"/>
+        </VBox>
+
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="Année:" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="txtAnnee" promptText="2024" style="-fx-padding: 5;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Section Boutons -->
+    <HBox spacing="10" style="-fx-padding: 10;">
+        <Button text="Ajouter" onAction="#handleAjouter" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="Modifier" onAction="#handleModifier" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #2196F3; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="Supprimer" onAction="#handleSupprimer" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #f44336; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="Vider" onAction="#viderChamps" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #FF9800; -fx-text-fill: white; -fx-border-radius: 3;"/>
+    </HBox>
+
+    <!-- Section Recherche -->
+    <HBox spacing="10" style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-color: white;">
+        <Label text="Rechercher:" style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+        <TextField fx:id="txtRecherche" promptText="Entrez un titre ou auteur..." style="-fx-padding: 5; -fx-pref-width: 300;"/>
+        <Button text="Rechercher" onAction="#handleRechercher" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #9C27B0; -fx-text-fill: white; -fx-border-radius: 3;"/>
+    </HBox>
+
+    <!-- TableView pour afficher les résultats -->
+    <Label text="Liste des Livres:" style="-fx-font-weight: bold; -fx-font-size: 14;">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+    </Label>
+
+    <TableView fx:id="tableLivres" style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 5;">
+        <columns>
+            <TableColumn fx:id="colIsbn" text="ISBN" prefWidth="150"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="200"/>
+            <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="150"/>
+            <TableColumn fx:id="colAnnee" text="Année" prefWidth="80"/>
+            <TableColumn fx:id="colDisponible" text="Disponible" prefWidth="100"/>
+        </columns>
+        <VBox.margin>
+            <Insets bottom="10"/>
+        </VBox.margin>
+    </TableView>
+
+</VBox>

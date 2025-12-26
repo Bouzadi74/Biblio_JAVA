@@ -3,12 +3,16 @@ package com.bibliotheque.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import com.bibliotheque.model.Book;
-import com.bibliotheque.service.BookService;
-import com.bibliotheque.service.BookServiceImpl;
-import java.sql.SQLException;
+import com.bibliotheque.model.Livre;
+import com.bibliotheque.service.BibliothequeService;
+import com.bibliotheque.exception.ValidationException;
 import java.util.List;
+import java.sql.SQLException;
 
+/**
+ * Contrôleur pour la gestion des livres
+ * Gère l'interaction entre la vue FXML et le service métier
+ */
 public class LivreController {
 
     // --- Champs FXML (Liaison avec la Vue) ---
@@ -24,27 +28,31 @@ public class LivreController {
     private TextField txtRecherche;
 
     @FXML
-    private TableView<Book> tableLivres;
+    private TableView<Livre> tableLivres;
     @FXML
-    private TableColumn<Book, String> colIsbn;
+    private TableColumn<Livre, String> colIsbn;
     @FXML
-    private TableColumn<Book, String> colTitre;
+    private TableColumn<Livre, String> colTitre;
     @FXML
-    private TableColumn<Book, String> colAuteur;
+    private TableColumn<Livre, String> colAuteur;
     @FXML
-    private TableColumn<Book, Integer> colAnnee;
+    private TableColumn<Livre, Integer> colAnnee;
     @FXML
-    private TableColumn<Book, Integer> colDisponible;
+    private TableColumn<Livre, Boolean> colDisponible;
 
     // --- Service ---
-    private BookService service;
+    private BibliothequeService service;
 
-    // Constructeur pour l'injection de dépendances
-    public LivreController(BookService service) {
+    /**
+     * Constructeur pour l'injection de dépendances
+     */
+    public LivreController(BibliothequeService service) {
         this.service = service;
     }
 
-    // Constructeur sans arguments pour le chargeur FXML
+    /**
+     * Constructeur sans arguments pour le chargeur FXML
+     */
     public LivreController() {
     }
 
@@ -56,15 +64,15 @@ public class LivreController {
     public void initialize() {
         // 1. Initialisation du Service (si non injecté)
         if (this.service == null) {
-            this.service = new BookServiceImpl();
+            this.service = new BibliothequeService();
         }
 
         // 2. Configuration des colonnes de la TableView
-        colIsbn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
-        colTitre.setCellValueFactory(new PropertyValueFactory<>("title"));
-        colAuteur.setCellValueFactory(new PropertyValueFactory<>("author"));
-        colAnnee.setCellValueFactory(new PropertyValueFactory<>("totalCopies"));
-        colDisponible.setCellValueFactory(new PropertyValueFactory<>("availableCopies"));
+        colIsbn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        colAuteur.setCellValueFactory(new PropertyValueFactory<>("auteur"));
+        colAnnee.setCellValueFactory(new PropertyValueFactory<>("anneePublication"));
+        colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
 
         // 3. Chargement initial des données
         chargerLivres();
@@ -82,13 +90,20 @@ public class LivreController {
     @FXML
     private void handleAjouter() {
         try {
+            // Validation des champs
+            if (txtIsbn.getText().trim().isEmpty() ||
+                    txtTitre.getText().trim().isEmpty() ||
+                    txtAuteur.getText().trim().isEmpty() ||
+                    txtAnnee.getText().trim().isEmpty()) {
+                afficherErreur("Validation", "Tous les champs sont obligatoires.");
+                return;
+            }
+
             // Création de l'objet à partir des champs
-            Book nouveauLivre = new Book(
-                    null,
+            Livre nouveauLivre = new Livre(
                     txtIsbn.getText(),
                     txtTitre.getText(),
                     txtAuteur.getText(),
-                    Integer.parseInt(txtAnnee.getText()),
                     Integer.parseInt(txtAnnee.getText()));
 
             // Appel au Service pour la logique métier
@@ -100,6 +115,8 @@ public class LivreController {
 
         } catch (NumberFormatException e) {
             afficherErreur("Erreur de format", "L'année doit être un nombre entier.");
+        } catch (ValidationException e) {
+            afficherErreur("Erreur de validation", e.getMessage());
         } catch (Exception e) {
             afficherErreur("Erreur lors de l'ajout", e.getMessage());
         }
@@ -107,18 +124,25 @@ public class LivreController {
 
     @FXML
     private void handleModifier() {
-        Book livreSelectionne = tableLivres.getSelectionModel().getSelectedItem();
+        Livre livreSelectionne = tableLivres.getSelectionModel().getSelectedItem();
         if (livreSelectionne == null) {
             afficherErreur("Aucune sélection", "Veuillez sélectionner un livre à modifier.");
             return;
         }
 
         try {
+            // Validation des champs
+            if (txtTitre.getText().trim().isEmpty() ||
+                    txtAuteur.getText().trim().isEmpty() ||
+                    txtAnnee.getText().trim().isEmpty()) {
+                afficherErreur("Validation", "Tous les champs sont obligatoires.");
+                return;
+            }
+
             // Mise à jour des informations de l'objet sélectionné
-            livreSelectionne.setTitle(txtTitre.getText());
-            livreSelectionne.setAuthor(txtAuteur.getText());
-            livreSelectionne.setTotalCopies(Integer.parseInt(txtAnnee.getText()));
-            // Note: On ne modifie généralement pas l'ID (ISBN)
+            livreSelectionne.setTitre(txtTitre.getText());
+            livreSelectionne.setAuteur(txtAuteur.getText());
+            livreSelectionne.setAnneePublication(Integer.parseInt(txtAnnee.getText()));
 
             // Appel au Service
             service.modifierLivre(livreSelectionne);
@@ -127,6 +151,10 @@ public class LivreController {
             viderChamps();
             chargerLivres();
 
+        } catch (NumberFormatException e) {
+            afficherErreur("Erreur de format", "L'année doit être un nombre entier.");
+        } catch (ValidationException e) {
+            afficherErreur("Erreur de validation", e.getMessage());
         } catch (Exception e) {
             afficherErreur("Erreur lors de la modification", e.getMessage());
         }
@@ -134,7 +162,7 @@ public class LivreController {
 
     @FXML
     private void handleSupprimer() {
-        Book livreSelectionne = tableLivres.getSelectionModel().getSelectedItem();
+        Livre livreSelectionne = tableLivres.getSelectionModel().getSelectedItem();
         if (livreSelectionne == null) {
             afficherErreur("Aucune sélection", "Veuillez sélectionner un livre à supprimer.");
             return;
@@ -164,7 +192,7 @@ public class LivreController {
     private void handleRechercher() {
         String motCle = txtRecherche.getText();
         try {
-            List<Book> resultats;
+            List<Livre> resultats;
             if (motCle == null || motCle.trim().isEmpty()) {
                 resultats = service.getTousLesLivres();
             } else {
@@ -172,7 +200,7 @@ public class LivreController {
                 resultats = service.rechercherLivres(motCle);
             }
             tableLivres.getItems().setAll(resultats);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             afficherErreur("Erreur de recherche", e.getMessage());
         }
     }
@@ -182,18 +210,18 @@ public class LivreController {
     private void chargerLivres() {
         try {
             // Le contrôleur délègue la récupération des données au service
-            List<Book> livres = service.getTousLesLivres();
+            List<Livre> livres = service.getTousLesLivres();
             tableLivres.getItems().setAll(livres);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             afficherErreur("Erreur de chargement", "Impossible de charger la liste des livres.\n" + e.getMessage());
         }
     }
 
-    private void remplirChamps(Book livre) {
-        txtIsbn.setText(livre.getIsbn());
-        txtTitre.setText(livre.getTitle());
-        txtAuteur.setText(livre.getAuthor());
-        txtAnnee.setText(String.valueOf(livre.getTotalCopies()));
+    private void remplirChamps(Livre livre) {
+        txtIsbn.setText(livre.getId());
+        txtTitre.setText(livre.getTitre());
+        txtAuteur.setText(livre.getAuteur());
+        txtAnnee.setText(String.valueOf(livre.getAnneePublication()));
         // Désactiver le champ ISBN lors de la modification pour éviter les incohérences
         txtIsbn.setDisable(true);
     }

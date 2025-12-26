@@ -1,20 +1,15 @@
 package com.bibliotheque.service;
 
 import com.bibliotheque.exception.ValidationException;
-import com.bibliotheque.model.Book;
-import java.sql.SQLException;
+import com.bibliotheque.model.Livre;
 import java.util.List;
 
 public interface BookService {
-    void ajouterLivre(Book livre) throws ValidationException;
+    void ajouterLivre(Livre livre) throws ValidationException;
 
-    void supprimerLivre(int livreId) throws SQLException;
+    void modifierLivre(Livre livre) throws ValidationException;
 
-    void modifierLivre(Book livre) throws SQLException;
+    List<Livre> getTousLesLivres();
 
-    Book getLivreById(int livreId) throws SQLException;
-
-    List<Book> getTousLesLivres() throws SQLException;
-
-    List<Book> rechercherLivres(String motCle) throws SQLException;
+    List<Livre> rechercherLivres(String motCle);
 }

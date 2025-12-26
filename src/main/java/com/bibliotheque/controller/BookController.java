@@ -35,7 +35,7 @@ public class BookController {
             String author = authorField.getText();
             int copies = Integer.parseInt(copiesField.getText().trim());
 
-            Book book = new Book(null, isbn, title, author, copies, copies);
+            Book book = new Book(null, isbn, title, author, copies, copies, copies);
             bookService.addBook(book);
             statusLabel.setText("Book added successfully");
             isbnField.clear(); titleField.clear(); authorField.clear(); copiesField.clear();

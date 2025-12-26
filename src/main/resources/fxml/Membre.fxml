@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bibliotheque.controller.MembreController">
+
+    <top>
+        <Label text="Module Membres"
+               BorderPane.alignment="CENTER"
+               style="-fx-font-size: 18px; -fx-font-weight: bold;">
+            <BorderPane.margin>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </BorderPane.margin>
+        </Label>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Formulaire -->
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="20"/>
+                    <ColumnConstraints percentWidth="30"/>
+                    <ColumnConstraints percentWidth="20"/>
+                    <ColumnConstraints percentWidth="30"/>
+                </columnConstraints>
+
+                <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="nomField" promptText="Nom"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Prénom:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <TextField fx:id="prenomField" promptText="Prénom"
+                           GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="emailField" promptText="Email"
+                           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Téléphone:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <TextField fx:id="telephoneField" promptText="Téléphone"
+                           GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                <Label text="Adresse:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="adresseField" promptText="Adresse"
+                           GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+            </GridPane>
+
+            <!-- Boutons CRUD + Actif -->
+            <HBox spacing="10">
+                <Button text="Ajouter" onAction="#onAjouter"/>
+                <Button text="Modifier" onAction="#onModifier"/>
+                <Button text="Supprimer" onAction="#onSupprimer"/>
+                <Separator orientation="VERTICAL"/>
+                <Button text="Activer" onAction="#onActiver"/>
+                <Button text="Désactiver" onAction="#onDesactiver"/>
+            </HBox>
+
+            <!-- Recherche -->
+            <HBox spacing="10">
+                <TextField fx:id="searchField" promptText="Rechercher (nom, prénom, email)..." HBox.hgrow="ALWAYS"/>
+                <Button text="Rechercher" onAction="#onRechercher"/>
+            </HBox>
+
+            <!-- Table + Historique -->
+            <SplitPane dividerPositions="0.7">
+                <VBox spacing="8">
+                    <Label text="Liste des membres" style="-fx-font-weight: bold;"/>
+
+                    <TableView fx:id="membresTable" prefHeight="300">
+                        <columns>
+                            <TableColumn fx:id="idCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="nomCol" text="Nom" prefWidth="150"/>
+                            <TableColumn fx:id="prenomCol" text="Prénom" prefWidth="150"/>
+                            <TableColumn fx:id="emailCol" text="Email" prefWidth="220"/>
+                            <TableColumn fx:id="actifCol" text="Actif" prefWidth="80"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <VBox spacing="8">
+                    <Label text="Historique emprunts" style="-fx-font-weight: bold;"/>
+                    <ListView fx:id="historiqueList" prefHeight="300"/>
+                </VBox>
+            </SplitPane>
+
+            <!-- Message -->
+            <Label fx:id="messageLabel" text=""
+                   style="-fx-text-fill: #1f6feb; -fx-font-weight: bold;"/>
+        </VBox>
+    </center>
+</BorderPane>

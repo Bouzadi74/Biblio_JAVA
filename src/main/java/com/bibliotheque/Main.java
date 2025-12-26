@@ -16,13 +16,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/add_book.fxml"));
-        // simple controller factory to inject service instances
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
+        // controller factory injects BibliothequeService into LivreController
         loader.setControllerFactory(clazz -> {
-            if (clazz == BookController.class) {
-                return new BookController(new BookServiceImpl());
-            }
             try {
+                if (clazz == com.bibliotheque.controller.LivreController.class) {
+                    com.bibliotheque.infra.DatabaseConnection db = com.bibliotheque.infra.DatabaseConnection.getInstance();
+                    com.bibliotheque.dao.LivreDAO livreDAO = new com.bibliotheque.dao.LivreDAOImpl(db);
+                    com.bibliotheque.service.BibliothequeService svc = new com.bibliotheque.service.BibliothequeServiceImpl(livreDAO);
+                    return clazz.getDeclaredConstructor(com.bibliotheque.service.BibliothequeService.class).newInstance(svc);
+                }
+                if (clazz == BookController.class) {
+                    return new BookController(new BookServiceImpl());
+                }
                 return clazz.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -30,8 +36,8 @@ public class Main extends Application {
         });
 
         Parent root = loader.load();
-        primaryStage.setTitle("Bibliotheque - Add Book");
-        primaryStage.setScene(new Scene(root, 600, 350));
+        primaryStage.setTitle("Bibliotheque - Home");
+        primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.show();
     }
 }

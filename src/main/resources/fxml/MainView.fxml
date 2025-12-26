@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.bibliotheque.controller.LivreController">
+    <top>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10" />
+            </padding>
+            <children>
+                <Button text="Sign Up" fx:id="signUpButton" />
+                <Button text="Sign In" fx:id="signInButton" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="searchField" promptText="Search by title or author" prefWidth="320" />
+                <Button text="Search" onAction="#onSearch" />
+            </children>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="8">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10" />
+            </padding>
+            <children>
+                <Label text="Library - Books" style="-fx-font-size:16px; -fx-font-weight:bold;" />
+                <TableView fx:id="booksTable" prefHeight="400">
+                    <columns>
+                        <TableColumn fx:id="colTitle" text="Title" prefWidth="320" />
+                        <TableColumn fx:id="colAuthor" text="Author" prefWidth="220" />
+                        <TableColumn fx:id="colAvailability" text="Availability" prefWidth="120" />
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="6" prefWidth="300">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10" />
+            </padding>
+            <children>
+                <Label text="Book Details" style="-fx-font-size:14px; -fx-font-weight:bold;" />
+                <GridPane hgap="8" vgap="6">
+                    <children>
+                        <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <Label fx:id="detailTitle" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                        <Label text="Author:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <Label fx:id="detailAuthor" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+                        <Label text="Year:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                        <Label fx:id="detailYear" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+                        <Label text="Availability:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                        <Label fx:id="detailAvailability" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+                        <Label text="ISBN:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                        <Label fx:id="detailIsbn" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+    </right>
+</BorderPane>

@@ -1,5 +1,6 @@
 package com.bibliotheque.service;
 
+<<<<<<< HEAD
 import com.bibliotheque.model.Livre;
 import com.bibliotheque.dao.LivreDAO;
 import com.bibliotheque.dao.LivreDAOImpl;
@@ -153,4 +154,18 @@ public class BibliothequeService implements BookService {
             throw new ValidationException("L'année de publication est invalide");
         }
     }
+=======
+import com.bibliotheque.model.Book;
+import java.util.List;
+
+/**
+ * Service facade for library operations used by controllers.
+ * Business rules live in implementations; controllers call this service only.
+ */
+public interface BibliothequeService {
+    /**
+     * Return list of books (Livres) from persistence.
+     */
+    List<Book> listLivres();
+>>>>>>> e014484e0ecce728e18711c7d7edda1ec5b547bb
 }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="controller.EmpruntController">
+    
+    <top>
+        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
+            <Label text="Gestion des Emprunts" textFill="white">
+                <font>
+                    <Font name="System Bold" size="24"/>
+                </font>
+            </Label>
+            <Label fx:id="lblMessage" textFill="white">
+                <font>
+                    <Font size="14"/>
+                </font>
+            </Label>
+        </VBox>
+    </top>
+    
+    <center>
+        <VBox spacing="20" style="-fx-padding: 20;">
+            
+            <VBox spacing="15" style="-fx-background-color: #ecf0f1; -fx-padding: 20; -fx-background-radius: 10;">
+                <Label text="Nouvel Emprunt" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+                
+                <GridPane hgap="15" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="150" prefWidth="150"/>
+                        <ColumnConstraints minWidth="300" prefWidth="300"/>
+                    </columnConstraints>
+                    
+                    <Label text="ID Membre :" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="txtMembreId" promptText="Entrez l'ID du membre" 
+                               GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    
+                    <Label text="Titre du Livre :" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <TextField fx:id="txtTitreLivre" promptText="Entrez le titre du livre" 
+                               GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                </GridPane>
+                
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Emprunter" onAction="#handleFormulaireEmprunt" 
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14; -fx-padding: 10 20;"/>
+                </HBox>
+            </VBox>
+            
+            <VBox spacing="15" style="-fx-background-color: #ecf0f1; -fx-padding: 20; -fx-background-radius: 10;">
+                <Label text="Retour de Livre" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+                
+                <GridPane hgap="15" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="150" prefWidth="150"/>
+                        <ColumnConstraints minWidth="300" prefWidth="300"/>
+                    </columnConstraints>
+                    
+                    <Label text="ID Emprunt :" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="txtEmpruntId" promptText="Entrez l'ID de l'emprunt" 
+                               GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                </GridPane>
+                
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Retourner" onAction="#handleFormulaireRetour" 
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14; -fx-padding: 10 20;"/>
+                </HBox>
+            </VBox>
+            
+            <VBox spacing="10">
+                <Label text="Liste des Emprunts" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+                
+                <TableView fx:id="tableEmprunts" prefHeight="300">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colMembreId" text="ID Membre" prefWidth="100"/>
+                        <TableColumn fx:id="colTitre" text="Titre Livre" prefWidth="200"/>
+                        <TableColumn fx:id="colDateEmprunt" text="Date Emprunt" prefWidth="120"/>
+                        <TableColumn fx:id="colDateRetourPrevue" text="Retour Prévu" prefWidth="120"/>
+                        <TableColumn fx:id="colDateRetourEffective" text="Retour Effectif" prefWidth="120"/>
+                        <TableColumn fx:id="colPenalite" text="Pénalité (DH)" prefWidth="100"/>
+                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+    
+    <bottom>
+        <HBox alignment="CENTER" spacing="10" style="-fx-background-color: #34495e; -fx-padding: 10;">
+            <Button text="Vérifier Retards" onAction="#handleGestionExceptions" 
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 12; -fx-padding: 8 15;"/>
+        </HBox>
+    </bottom>
+    
+</BorderPane>

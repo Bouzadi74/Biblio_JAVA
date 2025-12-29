@@ -1,20 +1,70 @@
 package com.bibliotheque.service;
 
+import java.util.List;
+
+import com.bibliotheque.dao.LivreDAO;
 import com.bibliotheque.exception.ValidationException;
-import com.bibliotheque.model.Book;
+import com.bibliotheque.model.Livre;
 
 public class BookServiceImpl implements BookService {
 
-    @Override
-    public void addBook(Book book) throws ValidationException {
-        if (book == null) throw new ValidationException("Book is null");
-        if (book.getIsbn() == null || book.getIsbn().trim().isEmpty())
-            throw new ValidationException("ISBN is required");
-        if (book.getTitle() == null || book.getTitle().trim().isEmpty())
-            throw new ValidationException("Title is required");
-        if (book.getTotalCopies() < 0) throw new ValidationException("Copies must be >= 0");
+    private final LivreDAO dao;
 
-        // TODO: delegate to DAO for persistence. This is a minimal skeleton.
-        System.out.println("[BookService] Persisting book: " + book.getTitle());
+    public BookServiceImpl(LivreDAO dao) {
+        this.dao = dao;
+    }
+
+    @Override
+    public void ajouterLivre(Livre livre) throws ValidationException {
+        // basic validation
+        if (livre.getId() == null || livre.getId().trim().isEmpty())
+            throw new ValidationException("ISBN manquant");
+        try {
+            dao.save(livre);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void modifierLivre(Livre livre) throws ValidationException {
+        if (livre.getId() == null || livre.getId().trim().isEmpty())
+            throw new ValidationException("ISBN manquant");
+        try {
+            dao.update(livre);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Livre> getTousLesLivres() {
+        try {
+            return dao.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Livre> rechercherLivres(String motCle) {
+        try {
+            // search by titre and auteur then merge
+            List<Livre> byTitre = dao.findByTitre(motCle);
+            List<Livre> byAuteur = dao.findByAuteur(motCle);
+            byTitre.addAll(byAuteur);
+            return byTitre;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void supprimerLivre(String isbn) {
+        try {
+            dao.delete(isbn);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

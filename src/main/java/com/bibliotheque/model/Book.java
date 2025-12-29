@@ -5,17 +5,19 @@ public class Book {
     private String isbn;
     private String title;
     private String author;
+    private Integer year;
     private int totalCopies;
     private int availableCopies;
 
     public Book() {
     }
 
-    public Book(Integer id, String isbn, String title, String author, int totalCopies, int availableCopies) {
+    public Book(Integer id, String isbn, String title, String author, Integer year, int totalCopies, int availableCopies) {
         this.id = id;
         this.isbn = isbn;
         this.title = title;
         this.author = author;
+        this.year = year;
         this.totalCopies = totalCopies;
         this.availableCopies = availableCopies;
     }
@@ -67,4 +69,7 @@ public class Book {
     public void setAvailableCopies(int availableCopies) {
         this.availableCopies = availableCopies;
     }
+
+    public Integer getYear() { return year; }
+    public void setYear(Integer year) { this.year = year; }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- ============================================================================
 -- Script SQL pour la gestion des Livres en Bibliothèque
 -- Base de données: bibliotheque
@@ -79,3 +80,21 @@ ORDER BY titre ASC;
 -- 3. Les colonnes annee_publication et disponible sont essentielles
 -- 4. Les index améliorent les performances de recherche
 -- ============================================================================
+=======
+-- Script de création de la table livres
+CREATE TABLE IF NOT EXISTS livres (
+    isbn VARCHAR(20) PRIMARY KEY,
+    titre VARCHAR(255) NOT NULL,
+    auteur VARCHAR(255) NOT NULL,
+    annee_publication INT,
+    disponible BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Données de test
+INSERT INTO livres (isbn, titre, auteur, annee_publication, disponible) VALUES
+('978-2-07-074192-6', 'Les Misérables', 'Victor Hugo', 1862, TRUE),
+('978-2-07-036822-8', 'Le Seigneur des Anneaux', 'J.R.R. Tolkien', 1954, TRUE),
+('978-2-07-044819-0', 'Harry Potter à l''école des sorciers', 'J.K. Rowling', 1997, TRUE);
+>>>>>>> 23e1e4fb064834a1628e4ab848cde59643820c49

@@ -5,6 +5,16 @@ import java.util.List;
 
 import com.bibliotheque.model.Emprunt;
 
+<<<<<<< HEAD
+/**
+ * DAO interface for Loan entity
+ */
+public interface EmpruntDAO extends GenericDAO<Emprunt, Integer> {
+    List<Emprunt> findByMemberId(Integer memberId);
+    List<Emprunt> findActiveByBookId(Integer bookId);
+}
+// this is a comment just for the test ,what do you
+=======
 public interface EmpruntDAO {
 
     void save(Emprunt emprunt) throws SQLException;

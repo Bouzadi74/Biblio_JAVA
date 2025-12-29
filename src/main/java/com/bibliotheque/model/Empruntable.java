@@ -1,6 +1,5 @@
 package com.bibliotheque.model;
 
-<<<<<<< HEAD
 /**
  * Interface définissant les contrats d'emprunt/retour pour les ressources
  * empruntables
@@ -32,9 +31,3 @@ public interface Empruntable {
      */
     void retourner();
 }
-=======
-public interface Empruntable {
-    boolean estDisponible();
-    void setDisponible(boolean disponible);
-}
->>>>>>> 23e1e4fb064834a1628e4ab848cde59643820c49

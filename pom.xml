@@ -28,11 +28,11 @@
             <version>${javafx.version}</version>
             <classifier>${javafx.platform}</classifier>
         </dependency>
-        <!-- dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
-        </dependency> -->
+        </dependency>
 
         <!-- Flyway for DB migrations (optional, recommended) -->
         <dependency>

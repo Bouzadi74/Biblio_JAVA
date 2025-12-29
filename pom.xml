@@ -28,9 +28,10 @@
             <version>${javafx.version}</version>
             <classifier>${javafx.platform}</classifier>
         </dependency>
+        
         <dependency>
             <groupId>mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
+            <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
 
@@ -54,12 +55,8 @@
             <version>5.5.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>5.5.0</version>
-            <scope>test</scope>
-        </dependency>
+
+        <!-- Removed org.mockito:mockito-inline due to missing artifact; mockito-core is used for tests. -->
     </dependencies>
 
     <build>

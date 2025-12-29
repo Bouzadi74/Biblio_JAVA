@@ -1,6 +1,5 @@
 package com.bibliotheque.service;
 
-<<<<<<< HEAD
 import com.bibliotheque.model.Livre;
 import com.bibliotheque.dao.LivreDAO;
 import com.bibliotheque.dao.impl.LivreDAOImpl;
@@ -47,7 +46,6 @@ public class BibliothequeService {
         }
 
         validerLivre(livre);
-
         try {
             livreDAO.save(livre);
         } catch (SQLException e) {
@@ -299,30 +297,3 @@ public class BibliothequeService {
         }
     }
 }
-=======
-import java.util.List;
-
-import com.bibliotheque.model.Membre;
-
-public interface BibliothequeService {
-
-    /* ===== Module MEMBRES ===== */
-
-    void ajouterMembre(Membre membre);
-
-    void modifierMembre(Membre membre);
-
-    void supprimerMembre(Long id);
-
-    List<Membre> listerMembres();
-
-    List<Membre> rechercherMembres(String motCle);
-
-    void activerMembre(Long id);
-
-    void desactiverMembre(Long id);
-
-    List<String> historiqueEmprunts(Long membreId);
-}
-
->>>>>>> 23e1e4fb064834a1628e4ab848cde59643820c49

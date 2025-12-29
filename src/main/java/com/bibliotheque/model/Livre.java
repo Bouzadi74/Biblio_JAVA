@@ -1,19 +1,14 @@
 package com.bibliotheque.model;
 
-<<<<<<< HEAD
 /**
  * Classe Livre représentant un livre dans la bibliothèque
  * Extends Document et implements Empruntable pour une gestion complète
  */
-=======
-// Doit étendre Document et implémenter Empruntable [cite: 556]
->>>>>>> 23e1e4fb064834a1628e4ab848cde59643820c49
 public class Livre extends Document implements Empruntable {
     private String auteur;
     private int anneePublication;
     private boolean disponible;
 
-<<<<<<< HEAD
     /**
      * Constructeur complet
      * 
@@ -41,15 +36,6 @@ public class Livre extends Document implements Empruntable {
 
     // ========== Implémentation de Empruntable ==========
 
-=======
-    public Livre(String isbn, String titre, String auteur, int anneePublication) {
-        super(isbn, titre); // id du parent = isbn [cite: 112]
-        this.auteur = auteur;
-        this.anneePublication = anneePublication;
-        this.disponible = true; // Par défaut disponible
-    }
-
->>>>>>> 23e1e4fb064834a1628e4ab848cde59643820c49
     @Override
     public boolean estDisponible() {
         return disponible;
@@ -60,7 +46,6 @@ public class Livre extends Document implements Empruntable {
         this.disponible = disponible;
     }
 
-<<<<<<< HEAD
     @Override
     public void emprunter() throws IllegalStateException {
         if (!disponible) {
@@ -120,11 +105,3 @@ public class Livre extends Document implements Empruntable {
                 '}';
     }
 }
-=======
-    // Getters et Setters spécifiques
-    public String getAuteur() { return auteur; }
-    public void setAuteur(String auteur) { this.auteur = auteur; }
-    public int getAnneePublication() { return anneePublication; }
-    public void setAnneePublication(int anneePublication) { this.anneePublication = anneePublication; }
-}
->>>>>>> 23e1e4fb064834a1628e4ab848cde59643820c49

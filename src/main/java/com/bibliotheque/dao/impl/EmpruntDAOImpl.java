@@ -1,11 +1,15 @@
 package com.bibliotheque.dao.impl;
 
-import com.bibliotheque.dao.EmpruntDAO;
-import com.bibliotheque.model.Emprunt;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.bibliotheque.dao.EmpruntDAO;
+import com.bibliotheque.model.Emprunt;
 
 public class EmpruntDAOImpl implements EmpruntDAO {
 
@@ -15,7 +19,6 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         this.connection = connection;
     }
 
-    @Override
     public void save(Emprunt e) throws SQLException {
         String sql = "INSERT INTO emprunts (id_membre, id_livre, date_emprunt, date_retour) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -51,6 +54,30 @@ public class EmpruntDAOImpl implements EmpruntDAO {
     }
 
     @Override
+    public List<Emprunt> findByMemberId(Integer memberId) throws SQLException {
+        String sql = "SELECT * FROM emprunts WHERE id_membre = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, memberId);
+
+        ResultSet rs = ps.executeQuery();
+        List<Emprunt> list = new ArrayList<>();
+        while (rs.next()) list.add(map(rs));
+        return list;
+    }
+
+    @Override
+    public List<Emprunt> findActiveByBookId(Integer bookId) throws SQLException {
+        String sql = "SELECT * FROM emprunts WHERE id_livre = ? AND date_retour IS NULL";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, bookId);
+
+        ResultSet rs = ps.executeQuery();
+        List<Emprunt> list = new ArrayList<>();
+        while (rs.next()) list.add(map(rs));
+        return list;
+    }
+
+    @Override
     public void update(Emprunt e) throws SQLException {
         String sql = "UPDATE emprunts SET id_membre=?, id_livre=?, date_emprunt=?, date_retour=? WHERE id=?";
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -59,6 +86,14 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         ps.setDate(3, Date.valueOf(e.getDateEmprunt()));
         ps.setDate(4, e.getDateRetour() == null ? null : Date.valueOf(e.getDateRetour()));
         ps.setInt(5, e.getId());
+        ps.executeUpdate();
+    }
+
+    @Override
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM emprunts WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id);
         ps.executeUpdate();
     }
 

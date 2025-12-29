@@ -1,7 +1,8 @@
 package com.bibliotheque.service;
 
-import com.bibliotheque.model.Membre;
 import java.util.List;
+
+import com.bibliotheque.model.Membre;
 
 public interface BibliothequeService {
 

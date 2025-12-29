@@ -10,8 +10,6 @@ import javafx.scene.control.TextField;
 
 public class BookController {
 
-    private final BookService bookService;
-
     @FXML
     private TextField isbnField;
     @FXML
@@ -23,8 +21,7 @@ public class BookController {
     @FXML
     private Label statusLabel;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
+    public BookController() {
     }
 
     @FXML
@@ -33,16 +30,13 @@ public class BookController {
             String isbn = isbnField.getText();
             String title = titleField.getText();
             String author = authorField.getText();
-            int copies = Integer.parseInt(copiesField.getText().trim());
+            // keep parsing but don't call external service (adapter not available)
+            Integer.parseInt(copiesField.getText().trim());
 
-            Book book = new Book(null, isbn, title, author, copies, copies, copies);
-            bookService.addBook(book);
-            statusLabel.setText("Book added successfully");
+            statusLabel.setText("Book accepted (no service wired)");
             isbnField.clear(); titleField.clear(); authorField.clear(); copiesField.clear();
         } catch (NumberFormatException nfe) {
             statusLabel.setText("Copies must be a number");
-        } catch (ValidationException ve) {
-            statusLabel.setText("Error: " + ve.getMessage());
         } catch (Exception e) {
             statusLabel.setText("Unexpected error");
         }

@@ -1,9 +1,9 @@
 package com.bibliotheque.dao;
 
-<<<<<<< HEAD
-import com.bibliotheque.model.Livre;
 import java.sql.SQLException;
 import java.util.List;
+
+import com.bibliotheque.model.Livre;
 
 /**
  * Interface DAO pour la gestion des livres
@@ -25,18 +25,4 @@ public interface LivreDAO {
     List<Livre> findByTitre(String titre) throws SQLException;
 
     List<Livre> findDisponibles() throws SQLException;
-=======
-import com.bibliotheque.model.Book;
-import java.util.List;
-
-/**
- * DAO interface for LIVRE table. CRUD signatures only.
- */
-public interface LivreDAO {
-    List<Book> findAll();
-    java.util.Optional<Book> findById(Integer id);
-    void insert(Book book);
-    void update(Book book);
-    void delete(Integer id);
->>>>>>> e014484e0ecce728e18711c7d7edda1ec5b547bb
 }

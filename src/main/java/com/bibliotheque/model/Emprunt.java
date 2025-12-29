@@ -12,6 +12,9 @@ public class Emprunt {
     private LocalDate dateRetourEffective;
     private double penalite;
     private String statut; // "EN_COURS", "RETOURNE", "EN_RETARD"
+    // Compatibility fields for older DAO/service implementations
+    private Integer idMembre;
+    private Integer idLivre;
 
     // Constructeur complet
     public Emprunt(int id, String titreLivre, String nomMembre, 
@@ -89,6 +92,32 @@ public class Emprunt {
 
     public void setDateRetourEffective(LocalDate dateRetourEffective) {
         this.dateRetourEffective = dateRetourEffective;
+    }
+
+    // Compatibility accessor names expected by DAO/service
+    public LocalDate getDateRetour() {
+        return this.dateRetourEffective;
+    }
+
+    public void setDateRetour(LocalDate dateRetour) {
+        this.dateRetourEffective = dateRetour;
+        if (dateRetour != null) this.statut = "RETOURNE";
+    }
+
+    public Integer getIdMembre() {
+        return idMembre;
+    }
+
+    public void setIdMembre(Integer idMembre) {
+        this.idMembre = idMembre;
+    }
+
+    public Integer getIdLivre() {
+        return idLivre;
+    }
+
+    public void setIdLivre(Integer idLivre) {
+        this.idLivre = idLivre;
     }
 
     public double getPenalite() {

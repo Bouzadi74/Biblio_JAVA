@@ -12,4 +12,5 @@ public interface BookService {
     List<Livre> getTousLesLivres();
 
     List<Livre> rechercherLivres(String motCle);
+    void supprimerLivre(String isbn);
 }

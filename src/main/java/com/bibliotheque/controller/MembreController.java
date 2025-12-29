@@ -63,10 +63,14 @@ public class MembreController {
         if (service == null) { afficher("Service non initialisé"); return; }
 
         Membre m = lireFormulaire(null);
-        service.ajouterMembre(m);
-        afficher("Membre ajouté ✅");
-        chargerMembres();
-        viderFormulaire();
+        try {
+            service.ajouterMembre(m);
+            afficher("Membre ajouté ✅");
+            chargerMembres();
+            viderFormulaire();
+        } catch (Exception e) {
+            afficher("Erreur: " + (e.getMessage() != null ? e.getMessage() : e.toString()));
+        }
     }
 
     @FXML
@@ -80,9 +84,13 @@ public class MembreController {
         // garder l’état actif actuel si ton formulaire ne le modifie pas
         m.setActif(selected.isActif());
 
-        service.modifierMembre(m);
-        afficher("Membre modifié ✅");
-        chargerMembres();
+        try {
+            service.modifierMembre(m);
+            afficher("Membre modifié ✅");
+            chargerMembres();
+        } catch (Exception e) {
+            afficher("Erreur: " + (e.getMessage() != null ? e.getMessage() : e.toString()));
+        }
     }
 
     @FXML
@@ -92,11 +100,15 @@ public class MembreController {
         Membre selected = membresTable.getSelectionModel().getSelectedItem();
         if (selected == null) { afficher("Sélectionne un membre"); return; }
 
-        service.supprimerMembre(selected.getId());
-        afficher("Membre supprimé ✅");
-        chargerMembres();
-        viderFormulaire();
-        historiqueList.getItems().clear();
+        try {
+            service.supprimerMembre(selected.getId());
+            afficher("Membre supprimé ✅");
+            chargerMembres();
+            viderFormulaire();
+            historiqueList.getItems().clear();
+        } catch (Exception e) {
+            afficher("Erreur: " + (e.getMessage() != null ? e.getMessage() : e.toString()));
+        }
     }
 
     // ===============================
@@ -110,9 +122,13 @@ public class MembreController {
         Membre selected = membresTable.getSelectionModel().getSelectedItem();
         if (selected == null) { afficher("Sélectionne un membre"); return; }
 
-        service.activerMembre(selected.getId());
-        afficher("Membre activé ✅");
-        chargerMembres();
+        try {
+            service.activerMembre(selected.getId());
+            afficher("Membre activé ✅");
+            chargerMembres();
+        } catch (Exception e) {
+            afficher("Erreur: " + (e.getMessage() != null ? e.getMessage() : e.toString()));
+        }
     }
 
     @FXML
@@ -122,9 +138,13 @@ public class MembreController {
         Membre selected = membresTable.getSelectionModel().getSelectedItem();
         if (selected == null) { afficher("Sélectionne un membre"); return; }
 
-        service.desactiverMembre(selected.getId());
-        afficher("Membre désactivé ✅");
-        chargerMembres();
+        try {
+            service.desactiverMembre(selected.getId());
+            afficher("Membre désactivé ✅");
+            chargerMembres();
+        } catch (Exception e) {
+            afficher("Erreur: " + (e.getMessage() != null ? e.getMessage() : e.toString()));
+        }
     }
 
     // ======================

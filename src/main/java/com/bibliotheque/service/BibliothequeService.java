@@ -3,47 +3,70 @@ package com.bibliotheque.service;
 import com.bibliotheque.model.Livre;
 import com.bibliotheque.dao.LivreDAO;
 import com.bibliotheque.dao.impl.LivreDAOImpl;
+
+import com.bibliotheque.model.Membre;
+import com.bibliotheque.dao.MembreDAO;
+import com.bibliotheque.dao.MembreDAOImpl;
+
+import com.bibliotheque.model.Emprunt;
+import com.bibliotheque.dao.EmpruntDAO;
+import com.bibliotheque.dao.impl.EmpruntDAOImpl;
+
+import com.bibliotheque.infra.DatabaseConnection;
+
 import com.bibliotheque.exception.ValidationException;
+
 import java.sql.SQLException;
 import java.time.Year;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 /**
- * Service métier pour la gestion des livres
+ * Service métier pour la bibliothèque
  * Contient toute la logique métier (validation, orchestration, etc.)
- * Les appels à la base de données passent par le DAO
+ * Les appels à la base de données passent par les DAO
  */
 public class BibliothequeService {
+
     private final LivreDAO livreDAO;
+    private final MembreDAO membreDAO;
+    private final EmpruntDAO empruntDAO;
 
     /**
-     * Constructeur avec injection du DAO
+     * Constructeur avec injection des DAO
+     */
+    public BibliothequeService(LivreDAO livreDAO, MembreDAO membreDAO, EmpruntDAO empruntDAO) {
+        this.livreDAO = livreDAO;
+        this.membreDAO = membreDAO;
+        this.empruntDAO = empruntDAO;
+    }
+
+    /**
+     * Constructeur avec injection du DAO Livre (et DAO Membre par défaut)
      */
     public BibliothequeService(LivreDAO livreDAO) {
         this.livreDAO = livreDAO;
+        this.membreDAO = new MembreDAOImpl();
+        this.empruntDAO = new EmpruntDAOImpl(DatabaseConnection.getInstance().getConnection());
     }
 
     /**
-     * Constructeur par défaut utilisant LivreDAOImpl
+     * Constructeur par défaut utilisant les impl DAO
      */
     public BibliothequeService() {
         this.livreDAO = new LivreDAOImpl();
+        this.membreDAO = new MembreDAOImpl();
+        this.empruntDAO = new EmpruntDAOImpl(DatabaseConnection.getInstance().getConnection());
     }
 
-    // ========== CRUD ==========
+    // =========================================================
+    // ====================== PARTIE LIVRE ======================
+    // =========================================================
 
-    /**
-     * Ajoute un nouveau livre à la bibliothèque
-     * 
-     * @param livre Le livre à ajouter
-     * @throws ValidationException si le livre est invalide
-     */
     public void ajouterLivre(Livre livre) throws ValidationException {
-        if (livre == null) {
-            throw new ValidationException("Le livre ne peut pas être null");
-        }
+        if (livre == null) throw new ValidationException("Le livre ne peut pas être null");
 
         validerLivre(livre);
         try {
@@ -53,19 +76,10 @@ public class BibliothequeService {
         }
     }
 
-    /**
-     * Modifie un livre existant
-     * 
-     * @param livre Le livre avec les nouvelles données
-     * @throws ValidationException si le livre est invalide
-     */
     public void modifierLivre(Livre livre) throws ValidationException {
-        if (livre == null) {
-            throw new ValidationException("Le livre ne peut pas être null");
-        }
+        if (livre == null) throw new ValidationException("Le livre ne peut pas être null");
 
         validerLivre(livre);
-
         try {
             livreDAO.update(livre);
         } catch (SQLException e) {
@@ -73,16 +87,8 @@ public class BibliothequeService {
         }
     }
 
-    /**
-     * Supprime un livre par son ISBN
-     * 
-     * @param isbn L'ISBN du livre à supprimer
-     * @throws ValidationException si l'ISBN est invalide
-     */
     public void supprimerLivre(String isbn) throws ValidationException {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            throw new ValidationException("L'ISBN ne peut pas être vide");
-        }
+        if (isbn == null || isbn.trim().isEmpty()) throw new ValidationException("L'ISBN ne peut pas être vide");
 
         try {
             livreDAO.delete(isbn);
@@ -91,13 +97,6 @@ public class BibliothequeService {
         }
     }
 
-    // ========== RECHERCHES ==========
-
-    /**
-     * Récupère tous les livres
-     * 
-     * @return Liste de tous les livres
-     */
     public List<Livre> getTousLesLivres() {
         try {
             return livreDAO.findAll();
@@ -107,26 +106,14 @@ public class BibliothequeService {
         }
     }
 
-    /**
-     * Recherche des livres par titre ou auteur
-     * 
-     * @param motCle Le mot-clé à chercher
-     * @return Liste des livres trouvés
-     */
     public List<Livre> rechercherLivres(String motCle) {
         if (motCle == null || motCle.trim().isEmpty()) {
             return getTousLesLivres();
         }
 
         try {
-            // Rechercher d'abord par titre
             List<Livre> resultats = livreDAO.findByTitre(motCle);
-
-            // Si rien trouvé par titre, rechercher par auteur
-            if (resultats.isEmpty()) {
-                resultats = livreDAO.findByAuteur(motCle);
-            }
-
+            if (resultats.isEmpty()) resultats = livreDAO.findByAuteur(motCle);
             return resultats;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la recherche: " + e.getMessage());
@@ -134,35 +121,18 @@ public class BibliothequeService {
         }
     }
 
-    /**
-     * Recherche un livre par son ISBN
-     * 
-     * @param isbn L'ISBN du livre
-     * @return Le livre trouvé, ou null si non trouvé
-     * @throws ValidationException si l'ISBN est invalide
-     */
     public Livre getLivreByIsbn(String isbn) throws ValidationException {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            throw new ValidationException("L'ISBN ne peut pas être vide");
-        }
+        if (isbn == null || isbn.trim().isEmpty()) throw new ValidationException("L'ISBN ne peut pas être vide");
 
         try {
             Livre livre = livreDAO.findById(isbn);
-            if (livre == null) {
-                throw new ValidationException("Aucun livre trouvé avec l'ISBN: " + isbn);
-            }
+            if (livre == null) throw new ValidationException("Aucun livre trouvé avec l'ISBN: " + isbn);
             return livre;
         } catch (SQLException e) {
             throw new ValidationException("Erreur lors de la récupération du livre: " + e.getMessage());
         }
     }
 
-    /**
-     * Recherche des livres par auteur
-     * 
-     * @param auteur Le nom de l'auteur
-     * @return Liste des livres de cet auteur
-     */
     public List<Livre> rechercherParAuteur(String auteur) {
         try {
             return livreDAO.findByAuteur(auteur);
@@ -172,12 +142,6 @@ public class BibliothequeService {
         }
     }
 
-    /**
-     * Recherche des livres par titre
-     * 
-     * @param titre Le titre à chercher
-     * @return Liste des livres trouvés
-     */
     public List<Livre> rechercherParTitre(String titre) {
         try {
             return livreDAO.findByTitre(titre);
@@ -187,11 +151,6 @@ public class BibliothequeService {
         }
     }
 
-    /**
-     * Récupère tous les livres disponibles
-     * 
-     * @return Liste des livres disponibles
-     */
     public List<Livre> getLivresDisponibles() {
         try {
             return livreDAO.findDisponibles();
@@ -201,14 +160,6 @@ public class BibliothequeService {
         }
     }
 
-    // ========== GESTION DES EMPRUNTS ==========
-
-    /**
-     * Emprunte un livre
-     * 
-     * @param isbn L'ISBN du livre à emprunter
-     * @throws ValidationException si le livre n'est pas disponible
-     */
     public void emprunterLivre(String isbn) throws ValidationException {
         Livre livre = getLivreByIsbn(isbn);
 
@@ -217,40 +168,17 @@ public class BibliothequeService {
         }
 
         livre.emprunter();
-        try {
-            modifierLivre(livre);
-        } catch (ValidationException e) {
-            throw new ValidationException("Erreur lors de l'enregistrement de l'emprunt: " + e.getMessage());
-        }
+        modifierLivre(livre);
     }
 
-    /**
-     * Retourne un livre emprunté
-     * 
-     * @param isbn L'ISBN du livre à retourner
-     * @throws ValidationException si une erreur se produit
-     */
     public void retournerLivre(String isbn) throws ValidationException {
         Livre livre = getLivreByIsbn(isbn);
         livre.retourner();
-
-        try {
-            modifierLivre(livre);
-        } catch (ValidationException e) {
-            throw new ValidationException("Erreur lors de l'enregistrement du retour: " + e.getMessage());
-        }
+        modifierLivre(livre);
     }
 
-    // ========== STATISTIQUES ==========
-
-    /**
-     * Récupère des statistiques sur les livres
-     * 
-     * @return Map contenant les statistiques
-     */
     public Map<String, Object> obtenirStatistiques() {
         Map<String, Object> stats = new HashMap<>();
-
         try {
             List<Livre> tousLesLivres = livreDAO.findAll();
             List<Livre> disponibles = livreDAO.findDisponibles();
@@ -258,42 +186,149 @@ public class BibliothequeService {
             stats.put("totalLivres", tousLesLivres.size());
             stats.put("livresDisponibles", disponibles.size());
             stats.put("livresEmpruntes", tousLesLivres.size() - disponibles.size());
-
             return stats;
+
         } catch (SQLException e) {
             System.err.println("Erreur lors du calcul des statistiques: " + e.getMessage());
             return stats;
         }
     }
 
-    // ========== VALIDATION ==========
-
-    /**
-     * Valide les données d'un livre
-     * 
-     * @param livre Le livre à valider
-     * @throws ValidationException si le livre est invalide
-     */
     private void validerLivre(Livre livre) throws ValidationException {
-        // Vérifier ISBN
-        if (livre.getIsbn() == null || livre.getIsbn().trim().isEmpty()) {
+        if (livre.getIsbn() == null || livre.getIsbn().trim().isEmpty())
             throw new ValidationException("L'ISBN est obligatoire");
-        }
 
-        // Vérifier Titre
-        if (livre.getTitre() == null || livre.getTitre().trim().isEmpty()) {
+        if (livre.getTitre() == null || livre.getTitre().trim().isEmpty())
             throw new ValidationException("Le titre est obligatoire");
-        }
 
-        // Vérifier Auteur
-        if (livre.getAuteur() == null || livre.getAuteur().trim().isEmpty()) {
+        if (livre.getAuteur() == null || livre.getAuteur().trim().isEmpty())
             throw new ValidationException("L'auteur est obligatoire");
-        }
 
-        // Vérifier Année de publication
         int anneeActuelle = Year.now().getValue();
-        if (livre.getAnneePublication() < 1000 || livre.getAnneePublication() > anneeActuelle) {
+        if (livre.getAnneePublication() < 1000 || livre.getAnneePublication() > anneeActuelle)
             throw new ValidationException("L'année de publication doit être entre 1000 et " + anneeActuelle);
+    }
+
+    // =========================================================
+    // ===================== PARTIE MEMBRE =====================
+    // =========================================================
+
+    public void ajouterMembre(Membre m) throws ValidationException {
+        if (m == null) throw new ValidationException("Le membre ne peut pas être null");
+        validerMembre(m);
+
+        try {
+            membreDAO.save(m);
+        } catch (SQLException e) {
+            throw new ValidationException("Erreur lors de l'ajout du membre: " + e.getMessage());
         }
     }
+
+    public void modifierMembre(Membre m) throws ValidationException {
+        if (m == null) throw new ValidationException("Le membre ne peut pas être null");
+        if (m.getId() == null) throw new ValidationException("L'id du membre est obligatoire pour modifier");
+
+        validerMembre(m);
+
+        try {
+            membreDAO.update(m);
+        } catch (SQLException e) {
+            throw new ValidationException("Erreur lors de la modification du membre: " + e.getMessage());
+        }
+    }
+
+    public void supprimerMembre(Long id) throws ValidationException {
+        if (id == null) throw new ValidationException("L'id ne peut pas être null");
+
+        try {
+            membreDAO.delete(id);
+        } catch (SQLException e) {
+            throw new ValidationException("Erreur lors de la suppression du membre: " + e.getMessage());
+        }
+    }
+
+    public void activerMembre(Long id) throws ValidationException {
+        if (id == null) throw new ValidationException("L'id ne peut pas être null");
+        try {
+            Membre m = membreDAO.findById(id).orElse(null);
+            if (m != null) {
+                m.setActif(true);
+                membreDAO.update(m);
+            }
+        } catch (SQLException e) {
+            throw new ValidationException("Erreur lors de l'activation: " + e.getMessage());
+        }
+    }
+
+    public void desactiverMembre(Long id) throws ValidationException {
+        if (id == null) throw new ValidationException("L'id ne peut pas être null");
+        try {
+            Membre m = membreDAO.findById(id).orElse(null);
+            if (m != null) {
+                m.setActif(false);
+                membreDAO.update(m);
+            }
+        } catch (SQLException e) {
+            throw new ValidationException("Erreur lors de la désactivation: " + e.getMessage());
+        }
+    }
+
+    public List<Membre> listerMembres() {
+        try {
+            return membreDAO.findAll();
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du listing membres: " + e.getMessage());
+            return new java.util.ArrayList<>();
+        }
+    }
+
+    public List<Membre> rechercherMembres(String motCle) {
+        if (motCle == null || motCle.trim().isEmpty()) return listerMembres();
+
+        try {
+            List<Membre> tous = membreDAO.findAll();
+            List<Membre> resultats = new java.util.ArrayList<>();
+            String lowerMotCle = motCle.toLowerCase();
+            for (Membre m : tous) {
+                if (m.getNom().toLowerCase().contains(lowerMotCle) || 
+                    m.getPrenom().toLowerCase().contains(lowerMotCle)) {
+                    resultats.add(m);
+                }
+            }
+            return resultats;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la recherche membres: " + e.getMessage());
+            return new java.util.ArrayList<>();
+        }
+    }
+
+    public List<String> historiqueEmprunts(Long membreId) {
+        if (membreId == null) return Collections.emptyList();
+
+        try {
+            List<Emprunt> emprunts = empruntDAO.findByMembre(membreId.intValue());
+            return emprunts.stream()
+                .map(e -> "Emprunt du " + e.getDateEmprunt() + (e.getDateRetour() != null ? " retourné le " + e.getDateRetour() : " en cours"))
+                .collect(java.util.stream.Collectors.toList());
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de l'historique: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private void validerMembre(Membre m) throws ValidationException {
+        if (m.getNom() == null || m.getNom().trim().isEmpty())
+            throw new ValidationException("Le nom est obligatoire");
+
+        if (m.getPrenom() == null || m.getPrenom().trim().isEmpty())
+            throw new ValidationException("Le prénom est obligatoire");
+
+        if (m.getEmail() == null || m.getEmail().trim().isEmpty())
+            throw new ValidationException("L'email est obligatoire");
+
+        // (Option simple) contrôle basique email
+        if (!m.getEmail().contains("@"))
+            throw new ValidationException("Email invalide");
+    }
 }
+

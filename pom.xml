@@ -28,11 +28,12 @@
             <version>${javafx.version}</version>
             <classifier>${javafx.platform}</classifier>
         </dependency>
-        <!-- dependency>
+        
+        <dependency>
             <groupId>mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
+            <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
-        </dependency> -->
+        </dependency>
 
         <!-- Flyway for DB migrations (optional, recommended) -->
         <dependency>
@@ -50,10 +51,19 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
+<<<<<<< HEAD
+            <artifactId>mockito-core</artifactId>
+            <version>5.5.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Removed org.mockito:mockito-inline due to missing artifact; mockito-core is used for tests. -->
+=======
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.5.0</version>
             <scope>test</scope>
         </dependency>
+>>>>>>> fec54c7f17c6ef2c2c180e37798c0382ca3ec5e8
     </dependencies>
 
     <build>

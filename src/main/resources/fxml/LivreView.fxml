@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.bibliotheque.controller.LivreController"
+      style="-fx-padding: 15; -fx-spacing: 10; -fx-background-color: #f5f5f5;"
+      prefHeight="800" prefWidth="1000">
+    
+    <!-- Titre -->
+    <Label text="📚 Gestion des Livres de Bibliothèque" 
+            style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1565c0;">
+        <VBox.margin>
+            <Insets bottom="10"/>
+        </VBox.margin>
+    </Label>
+
+    <!-- Statistiques -->
+    <HBox style="-fx-padding: 10; -fx-border-color: #1565c0; -fx-border-radius: 5; -fx-background-color: #e3f2fd;">
+        <Label text="Statistiques: " style="-fx-font-weight: bold; -fx-font-size: 12;"/>
+        <Label fx:id="labelStatistiques" text="Chargement..." 
+                style="-fx-font-size: 12; -fx-text-fill: #1565c0;"/>
+        <HBox.setHgrow>
+            <Region/>
+        </HBox.setHgrow>
+    </HBox>
+
+    <!-- Section Formulaire (Saisie) -->
+    <HBox style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-color: white;" 
+          spacing="10">
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="ISBN:" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+            <TextField fx:id="txtIsbn" promptText="ISBN" style="-fx-padding: 5; -fx-font-size: 11;"/>
+        </VBox>
+
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="Titre:" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+            <TextField fx:id="txtTitre" promptText="Titre du livre" style="-fx-padding: 5; -fx-font-size: 11;"/>
+        </VBox>
+
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="Auteur:" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+            <TextField fx:id="txtAuteur" promptText="Auteur" style="-fx-padding: 5; -fx-font-size: 11;"/>
+        </VBox>
+
+        <VBox spacing="5" style="-fx-padding: 5;">
+            <Label text="Année:" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+            <TextField fx:id="txtAnnee" promptText="2024" style="-fx-padding: 5; -fx-font-size: 11;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Section Boutons CRUD -->
+    <HBox spacing="10" style="-fx-padding: 10;">
+        <Button text="➕ Ajouter" onAction="#handleAjouter" 
+                style="-fx-padding: 8 15; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="✏️ Modifier" onAction="#handleModifier" 
+                style="-fx-padding: 8 15; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-color: #2196F3; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="🗑️ Supprimer" onAction="#handleSupprimer" 
+                style="-fx-padding: 8 15; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-color: #f44336; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="🔄 Rafraîchir" onAction="#handleRafraichir" 
+                style="-fx-padding: 8 15; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-color: #FF9800; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="✨ Disponibles" onAction="#handleAfficherDisponibles" 
+                style="-fx-padding: 8 15; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-color: #9C27B0; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="🗑️ Vider" onAction="#viderChamps" 
+                style="-fx-padding: 8 15; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-color: #757575; -fx-text-fill: white; -fx-border-radius: 3;"/>
+    </HBox>
+
+    <!-- Section Recherche -->
+    <HBox spacing="10" style="-fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-color: white;">
+        <Label text="🔍 Recherche:" style="-fx-font-weight: bold; -fx-font-size: 11;"/>
+        <TextField fx:id="txtRecherche" promptText="Titre, auteur ou ISBN..." 
+                  style="-fx-padding: 5; -fx-font-size: 11; -fx-pref-width: 400;"/>
+        <Button text="Rechercher" onAction="#handleRechercher" 
+                style="-fx-padding: 5 15; -fx-font-size: 11; -fx-background-color: #1565c0; -fx-text-fill: white; -fx-border-radius: 3;"/>
+    </HBox>
+
+    <!-- TableView des livres -->
+    <Label text="Liste des Livres:" style="-fx-font-weight: bold; -fx-font-size: 13;">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+    </Label>
+
+    <ScrollPane style="-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 5;" 
+               fitToWidth="true" fitToHeight="true">
+        <TableView fx:id="tableLivres" style="-fx-font-size: 11;">
+            <columns>
+                <TableColumn fx:id="colIsbn" text="ISBN" prefWidth="150" sortable="true"/>
+                <TableColumn fx:id="colTitre" text="Titre" prefWidth="250" sortable="true"/>
+                <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="180" sortable="true"/>
+                <TableColumn fx:id="colAnnee" text="Année" prefWidth="80" sortable="true"/>
+                <TableColumn fx:id="colDisponible" text="Disponible" prefWidth="100" sortable="true"/>
+            </columns>
+        </TableView>
+    </ScrollPane>
+
+    <VBox.setVgrow>
+        <ScrollPane/>
+    </VBox.setVgrow>
+</VBox>

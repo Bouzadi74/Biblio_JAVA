@@ -13,3 +13,4 @@ public interface EmpruntDAO extends GenericDAO<Emprunt, Integer> {
     List<Emprunt> findByMemberId(Integer memberId);
     List<Emprunt> findActiveByBookId(Integer bookId);
 }
+// this is a comment just for the test ,what do you

@@ -33,7 +33,7 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         }
     }
 
-    @Override
+
     public Emprunt findById(Integer id) {
         String sql = "SELECT * FROM emprunts WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

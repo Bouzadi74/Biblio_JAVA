@@ -32,7 +32,7 @@ public class EmpruntService {
     }
 
     public void retournerLivre(int idEmprunt) throws Exception {
-        Emprunt e = dao.findById(idEmprunt);
+        Emprunt e = dao.findById(idEmprunt).orElse(null);
         if (e == null)
             throw new Exception("Emprunt introuvable.");
 

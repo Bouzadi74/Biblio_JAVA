@@ -6,7 +6,7 @@ import com.bibliotheque.dao.impl.LivreDAOImpl;
 
 import com.bibliotheque.model.Membre;
 import com.bibliotheque.dao.MembreDAO;
-import com.bibliotheque.dao.MembreDAOImpl;
+import com.bibliotheque.dao.impl.MembreDAOImpl;
 
 import com.bibliotheque.model.Emprunt;
 import com.bibliotheque.dao.EmpruntDAO;
@@ -305,15 +305,10 @@ public class BibliothequeService {
     public List<String> historiqueEmprunts(Long membreId) {
         if (membreId == null) return Collections.emptyList();
 
-        try {
-            List<Emprunt> emprunts = empruntDAO.findByMembre(membreId.intValue());
-            return emprunts.stream()
-                .map(e -> "Emprunt du " + e.getDateEmprunt() + (e.getDateRetour() != null ? " retourné le " + e.getDateRetour() : " en cours"))
-                .collect(java.util.stream.Collectors.toList());
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de l'historique: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        List<Emprunt> emprunts = empruntDAO.findByMemberId(membreId.intValue());
+        return emprunts.stream()
+            .map(e -> "Emprunt du " + e.getDateEmprunt() + (e.getDateRetour() != null ? " retourné le " + e.getDateRetour() : " en cours"))
+            .collect(java.util.stream.Collectors.toList());
     }
 
     private void validerMembre(Membre m) throws ValidationException {

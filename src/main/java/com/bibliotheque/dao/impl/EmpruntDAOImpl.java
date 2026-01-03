@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.bibliotheque.dao.EmpruntDAO;
 import com.bibliotheque.model.Emprunt;
@@ -33,17 +34,23 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         }
     }
 
+    // EmpruntDAO defines `save` as well in some variants; expose it to be safe
+    public void save(Emprunt e) {
+        insert(e);
+    }
 
-    public Emprunt findById(Integer id) {
+
+    @Override
+    public Optional<Emprunt> findById(Integer id) {
         String sql = "SELECT * FROM emprunts WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return map(rs);
+                    return Optional.of(map(rs));
                 }
             }
-            return null;
+            return Optional.empty();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -118,20 +125,6 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         }
     }
 
-    // Legacy / helper methods kept (not part of the current GenericDAO/EmpruntDAO contract)
-    public List<Emprunt> findByMembre(int idMembre) {
-        String sql = "SELECT * FROM emprunts WHERE id_membre=? AND date_retour IS NULL";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, idMembre);
-            try (ResultSet rs = ps.executeQuery()) {
-                List<Emprunt> list = new ArrayList<>();
-                while (rs.next()) list.add(map(rs));
-                return list;
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 
     public List<Emprunt> findEnCours() {
         String sql = "SELECT * FROM emprunts WHERE date_retour IS NULL";

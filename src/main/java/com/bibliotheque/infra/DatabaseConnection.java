@@ -11,11 +11,11 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
 
-    // Configuration de la base de données
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/bibliotheque";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "";
-    private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
+    // Configuration de la base de données (peut être surchargée via System properties)
+    private static final String DB_URL = System.getProperty("DB_URL", "jdbc:mysql://localhost:3306/bibliotheque");
+    private static final String DB_USER = System.getProperty("DB_USER", "root");
+    private static final String DB_PASSWORD = System.getProperty("DB_PASSWORD", "");
+    private static final String DB_DRIVER = System.getProperty("DB_DRIVER", "com.mysql.cj.jdbc.Driver");
 
     private DatabaseConnection() {
         try {
@@ -41,6 +41,18 @@ public class DatabaseConnection {
      * Retourne la connexion à la base de données
      */
     public Connection getConnection() {
+        try {
+            if (this.connection == null || this.connection.isClosed()) {
+                try {
+                    Class.forName(DB_DRIVER);
+                } catch (ClassNotFoundException ignored) {
+                    // Driver may be provided by module path or JDBC driver manager
+                }
+                this.connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            }
+        } catch (SQLException e) {
+            System.err.println("[DatabaseConnection] Erreur lors de l'ouverture de la connexion: " + e.getMessage());
+        }
         return this.connection;
     }
 

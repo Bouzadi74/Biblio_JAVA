@@ -22,11 +22,19 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public void insert(Emprunt e) {
+<<<<<<< HEAD
         // Prefer new schema (date_retour_prevue, statut) but fall back to legacy (date_retour) for tests
         String sqlNew = "INSERT INTO emprunts (id_membre, id_livre, date_emprunt, date_retour_prevue, statut) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sqlNew)) {
             ps.setInt(1, e.getIdMembre());
             ps.setInt(2, e.getIdLivre());
+=======
+        // Insert uses schema columns: id_membre, isbn_livre, date_emprunt, date_retour_prevue, statut
+        String sql = "INSERT INTO emprunts (id_membre, isbn_livre, date_emprunt, date_retour_prevue, statut) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, e.getIdMembre());
+            ps.setString(2, e.getIsbnLivre());
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
             ps.setDate(3, Date.valueOf(e.getDateEmprunt()));
             ps.setDate(4, e.getDateRetourPrevue() == null ? null : Date.valueOf(e.getDateRetourPrevue()));
             ps.setString(5, e.getStatut());
@@ -55,11 +63,19 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
 
     @Override
+<<<<<<< HEAD
     public Optional<Emprunt> findById(Integer id) {
         // Try new primary key column `id_emprunt`, fallback to legacy `id`
         String sqlNew = "SELECT * FROM emprunts WHERE id_emprunt = ?";
         try (PreparedStatement ps = connection.prepareStatement(sqlNew)) {
             ps.setInt(1, id);
+=======
+    public Optional<Emprunt> findById(Long id) {
+        // Primary key column is `id`
+        String sql = "SELECT * FROM emprunts WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, id);
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return Optional.of(map(rs));
             }
@@ -94,10 +110,10 @@ public class EmpruntDAOImpl implements EmpruntDAO {
     }
 
     @Override
-    public List<Emprunt> findByMemberId(Integer memberId) {
+    public List<Emprunt> findByMemberId(Long memberId) {
         String sql = "SELECT * FROM emprunts WHERE id_membre = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, memberId);
+            ps.setLong(1, memberId);
             try (ResultSet rs = ps.executeQuery()) {
                 List<Emprunt> list = new ArrayList<>();
                 while (rs.next()) list.add(map(rs));
@@ -109,11 +125,19 @@ public class EmpruntDAOImpl implements EmpruntDAO {
     }
 
     @Override
+<<<<<<< HEAD
     public List<Emprunt> findActiveByBookId(Integer bookId) {
         // Prefer new column date_retour_effective; fallback to legacy date_retour IS NULL
         String sqlNew = "SELECT * FROM emprunts WHERE id_livre = ? AND date_retour_effective IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sqlNew)) {
             ps.setInt(1, bookId);
+=======
+    public List<Emprunt> findActiveByBookIsbn(String isbn) {
+        // Active when date_retour_effective IS NULL
+        String sql = "SELECT * FROM emprunts WHERE isbn_livre = ? AND date_retour_effective IS NULL";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, isbn);
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
             try (ResultSet rs = ps.executeQuery()) {
                 List<Emprunt> list = new ArrayList<>();
                 while (rs.next()) list.add(map(rs));
@@ -138,16 +162,24 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public void update(Emprunt e) {
+<<<<<<< HEAD
         // Try update with new schema, fall back to legacy update
         String sqlNew = "UPDATE emprunts SET id_membre=?, id_livre=?, date_emprunt=?, date_retour_prevue=?, date_retour_effective=?, statut=? WHERE id_emprunt=?";
         try (PreparedStatement ps = connection.prepareStatement(sqlNew)) {
             ps.setInt(1, e.getIdMembre());
             ps.setInt(2, e.getIdLivre());
+=======
+        // Update uses explicit schema columns including planned/effective return dates and statut
+        String sql = "UPDATE emprunts SET id_membre=?, isbn_livre=?, date_emprunt=?, date_retour_prevue=?, date_retour_effective=?, statut=? WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, e.getIdMembre());
+            ps.setString(2, e.getIsbnLivre());
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
             ps.setDate(3, Date.valueOf(e.getDateEmprunt()));
             ps.setDate(4, e.getDateRetourPrevue() == null ? null : Date.valueOf(e.getDateRetourPrevue()));
             ps.setDate(5, e.getDateRetourEffective() == null ? null : Date.valueOf(e.getDateRetourEffective()));
             ps.setString(6, e.getStatut());
-            ps.setInt(7, e.getId());
+            ps.setLong(7, e.getId());
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -168,11 +200,19 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         }
     }
 
+
     @Override
+<<<<<<< HEAD
     public void delete(Integer id) {
         String sqlNew = "DELETE FROM emprunts WHERE id_emprunt = ?";
         try (PreparedStatement ps = connection.prepareStatement(sqlNew)) {
             ps.setInt(1, id);
+=======
+    public void delete(Long id) {
+        String sql = "DELETE FROM emprunts WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, id);
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -212,10 +252,17 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         }
     }
 
+<<<<<<< HEAD
     public int countEmpruntsEnCours(int idMembre) {
         String sqlNew = "SELECT COUNT(*) FROM emprunts WHERE id_membre=? AND date_retour_effective IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sqlNew)) {
             ps.setInt(1, idMembre);
+=======
+    public int countEmpruntsEnCours(long idMembre) {
+        String sql = "SELECT COUNT(*) FROM emprunts WHERE id_membre=? AND date_retour_effective IS NULL";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, idMembre);
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 return rs.getInt(1);
@@ -238,6 +285,7 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     private Emprunt map(ResultSet rs) throws SQLException {
         Emprunt e = new Emprunt();
+<<<<<<< HEAD
         // id: try id_emprunt then fallback to id
         try {
             e.setId(rs.getInt("id_emprunt"));
@@ -254,6 +302,13 @@ public class EmpruntDAOImpl implements EmpruntDAO {
                 try { e.setIdLivre(Integer.parseInt(s)); } catch (NumberFormatException ignore) {}
             }
         }
+=======
+        // map id -> id
+        e.setId(rs.getLong("id"));
+        e.setIdMembre(rs.getLong("id_membre"));
+        // isbn_livre stored as VARCHAR
+        e.setIsbnLivre(rs.getString("isbn_livre"));
+>>>>>>> 2a57626cdf38e7cc9a1afb11539b1b4a50a29e6f
         Date dEmprunt = rs.getDate("date_emprunt");
         if (dEmprunt != null) e.setDateEmprunt(dEmprunt.toLocalDate());
 

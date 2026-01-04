@@ -5,6 +5,7 @@ package com.bibliotheque.model;
  * Extends Document et implements Empruntable pour une gestion complète
  */
 public class Livre extends Document implements Empruntable {
+    private long livreId;
     private String auteur;
     private int anneePublication;
     private boolean disponible;
@@ -83,6 +84,14 @@ public class Livre extends Document implements Empruntable {
 
     public void setAnneePublication(int anneePublication) {
         this.anneePublication = anneePublication;
+    }
+
+    public long getLivreId() {
+        return livreId;
+    }
+
+    public void setLivreId(long livreId) {
+        this.livreId = livreId;
     }
 
     // Alias pour ISBN (id du Document)

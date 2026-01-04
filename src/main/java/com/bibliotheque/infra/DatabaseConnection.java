@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.flywaydb.core.Flyway;
+
 /**
  * Singleton pour la gestion de la connexion à la base de données
  */
@@ -14,7 +16,7 @@ public class DatabaseConnection {
     // Configuration de la base de données (peut être surchargée via System properties ou variables d'environnement)
     // Default values: adjust to match your local MySQL schema/name/user/password
     // The project SQL files create schema `bib` (see /sql/*.sql) so use that by default
-    private static final String DB_DRIVER = System.getProperty("DB_DRIVER", System.getenv().getOrDefault("DB_DRIVER", "com.mysql.cj.jdbc.Driver"));
+    private static final String DB_DRIVER = resolve("DB_DRIVER", "org.h2.Driver");
 
     private static String resolve(String propName, String defaultValue) {
         String v = System.getProperty(propName);
@@ -24,8 +26,8 @@ public class DatabaseConnection {
         return defaultValue;
     }
 
-    private static final String DB_URL = resolve("DB_URL", "jdbc:mysql://localhost:3306/bib");
-    private static final String DB_USER = resolve("DB_USER", "root");
+    private static final String DB_URL = resolve("DB_URL", "jdbc:h2:mem:bib;MODE=MySQL;DATABASE_TO_LOWER=TRUE");
+    private static final String DB_USER = resolve("DB_USER", "sa");
     private static final String DB_PASSWORD = resolve("DB_PASSWORD", "");
 
     private DatabaseConnection() {
@@ -36,6 +38,14 @@ public class DatabaseConnection {
             }
             this.connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             System.out.println("[DatabaseConnection] Connexion établie avec succès to " + DB_URL + " as " + DB_USER);
+
+            // Run Flyway migrations
+            Flyway flyway = Flyway.configure()
+                    .dataSource(DB_URL, DB_USER, DB_PASSWORD)
+                    .load();
+            flyway.migrate();
+            System.out.println("[DatabaseConnection] Migrations Flyway exécutées avec succès");
+
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("[DatabaseConnection] Erreur de connexion: " + e.getMessage());
             e.printStackTrace(System.err);

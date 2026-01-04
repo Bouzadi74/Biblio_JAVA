@@ -15,6 +15,7 @@ public class Emprunt {
     // Compatibility fields for older DAO/service implementations
     private Long idMembre;
     private String isbnLivre;
+    private Integer idLivre;
 
     // Constructeur complet
     public Emprunt(long id, String titreLivre, String nomMembre, 
@@ -112,12 +113,30 @@ public class Emprunt {
         this.idMembre = idMembre;
     }
 
+    // compatibility overload to accept primitive int in tests/legacy code
+    public void setIdMembre(int idMembre) {
+        this.idMembre = Long.valueOf(idMembre);
+    }
+
     public String getIsbnLivre() {
         return isbnLivre;
     }
 
     public void setIsbnLivre(String isbnLivre) {
         this.isbnLivre = isbnLivre;
+    }
+
+    public Integer getIdLivre() {
+        return idLivre;
+    }
+
+    public void setIdLivre(Integer idLivre) {
+        this.idLivre = idLivre;
+    }
+
+    // compatibility overload for tests that use primitive int
+    public void setIdLivre(int idLivre) {
+        this.idLivre = Integer.valueOf(idLivre);
     }
 
     public double getPenalite() {

@@ -1,27 +1,23 @@
 package com.bibliotheque.service;
 
-import com.bibliotheque.model.Livre;
-import com.bibliotheque.dao.LivreDAO;
-import com.bibliotheque.dao.impl.LivreDAOImpl;
-
-import com.bibliotheque.model.Membre;
-import com.bibliotheque.dao.MembreDAO;
-import com.bibliotheque.dao.impl.MembreDAOImpl;
-
-import com.bibliotheque.model.Emprunt;
-import com.bibliotheque.dao.EmpruntDAO;
-import com.bibliotheque.dao.impl.EmpruntDAOImpl;
-
-import com.bibliotheque.infra.DatabaseConnection;
-
-import com.bibliotheque.exception.ValidationException;
-
 import java.sql.SQLException;
 import java.time.Year;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.bibliotheque.dao.EmpruntDAO;
+import com.bibliotheque.dao.EmpruntDAOImpl;
+import com.bibliotheque.dao.LivreDAO;
+import com.bibliotheque.dao.MembreDAO;
+import com.bibliotheque.dao.impl.LivreDAOImpl;
+import com.bibliotheque.dao.impl.MembreDAOImpl;
+import com.bibliotheque.exception.ValidationException;
+import com.bibliotheque.infra.DatabaseConnection;
+import com.bibliotheque.model.Emprunt;
+import com.bibliotheque.model.Livre;
+import com.bibliotheque.model.Membre;
 
 /**
  * Service métier pour la bibliothèque

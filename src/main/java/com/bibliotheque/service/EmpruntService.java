@@ -32,6 +32,22 @@ public class EmpruntService {
         dao.save(e);
     }
 
+    // Compatibility overload used by tests that reference a numeric book id
+    public void emprunterLivre(long idMembre, int idLivre) throws Exception {
+        int nb = dao.countEmpruntsEnCours(idMembre);
+        if (nb >= 3)
+            throw new Exception("Un membre ne peut pas dépasser 3 emprunts en cours.");
+
+        Emprunt e = new Emprunt();
+        e.setIdMembre(idMembre);
+        e.setIdLivre(idLivre);
+        e.setDateEmprunt(LocalDate.now());
+        e.setDateRetourPrevue(LocalDate.now().plusDays(14));
+        e.setStatut("EN_COURS");
+
+        dao.save(e);
+    }
+
     public void retournerLivre(long idEmprunt) throws Exception {
         Emprunt e = dao.findById(idEmprunt).orElse(null);
         if (e == null)

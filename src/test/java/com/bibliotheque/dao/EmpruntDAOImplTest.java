@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.bibliotheque.dao.impl.EmpruntDAOImpl;
 import com.bibliotheque.model.Emprunt;
 
 public class EmpruntDAOImplTest {
@@ -24,7 +23,7 @@ public class EmpruntDAOImplTest {
     void setup() throws Exception {
         conn = DriverManager.getConnection("jdbc:h2:mem:emprunt;DB_CLOSE_DELAY=-1", "sa", "");
         try (Statement st = conn.createStatement()) {
-            st.execute("CREATE TABLE emprunts (id INT AUTO_INCREMENT PRIMARY KEY, id_membre INT, id_livre INT, date_emprunt DATE, date_retour DATE);");
+            st.execute("CREATE TABLE IF NOT EXISTS emprunts (id INT AUTO_INCREMENT PRIMARY KEY, id_membre INT, id_livre INT, date_emprunt DATE, date_retour DATE);");
         }
         dao = new EmpruntDAOImpl(conn);
     }

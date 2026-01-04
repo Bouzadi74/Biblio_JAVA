@@ -33,7 +33,7 @@ public class LivreDAOTest {
 
         Connection conn = DatabaseConnection.getInstance().getConnection();
         try (Statement st = conn.createStatement()) {
-            st.execute("CREATE TABLE livres (isbn VARCHAR(50) PRIMARY KEY, titre VARCHAR(255), auteur VARCHAR(255), annee_publication INT, disponible BOOLEAN);");
+            st.execute("CREATE TABLE IF NOT EXISTS livres (isbn VARCHAR(50) PRIMARY KEY, titre VARCHAR(255), auteur VARCHAR(255), annee_publication INT, disponible BOOLEAN);");
         }
     }
 

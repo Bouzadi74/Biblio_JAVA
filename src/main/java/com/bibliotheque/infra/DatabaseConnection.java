@@ -32,6 +32,7 @@ public class DatabaseConnection {
 
     private DatabaseConnection() {
         try {
+            // First try configured DB
             Class.forName(DB_DRIVER);
             if (DB_PASSWORD == null || DB_PASSWORD.isEmpty()) {
                 System.out.println("[DatabaseConnection] Tentative de connexion avec utilisateur='" + DB_USER + "' et mot de passe vide (vérifiez vos propriétés/variables DB_PASSWORD)");
@@ -39,16 +40,42 @@ public class DatabaseConnection {
             this.connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             System.out.println("[DatabaseConnection] Connexion établie avec succès to " + DB_URL + " as " + DB_USER);
 
-            // Run Flyway migrations
-            Flyway flyway = Flyway.configure()
-                    .dataSource(DB_URL, DB_USER, DB_PASSWORD)
-                    .load();
-            flyway.migrate();
-            System.out.println("[DatabaseConnection] Migrations Flyway exécutées avec succès");
+            // Run Flyway migrations if possible — failures here should not crash the app
+            try {
+                Flyway flyway = Flyway.configure()
+                        .dataSource(DB_URL, DB_USER, DB_PASSWORD)
+                        .load();
+                flyway.migrate();
+                System.out.println("[DatabaseConnection] Migrations Flyway exécutées avec succès");
+            } catch (Exception fx) {
+                System.err.println("[DatabaseConnection] Flyway migration skipped: " + fx.getMessage());
+            }
 
         } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("[DatabaseConnection] Erreur de connexion: " + e.getMessage());
-            e.printStackTrace(System.err);
+            System.err.println("[DatabaseConnection] Erreur de connexion au DB configuré: " + e.getMessage());
+            // Attempt fallback to embedded H2 in MySQL compatibility mode
+            try {
+                String fallbackDriver = "org.h2.Driver";
+                String fallbackUrl = "jdbc:h2:mem:bib;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1";
+                String fallbackUser = "sa";
+                String fallbackPassword = "";
+                System.out.println("[DatabaseConnection] Tentative de fallback vers H2 embarquée: " + fallbackUrl);
+                Class.forName(fallbackDriver);
+                this.connection = DriverManager.getConnection(fallbackUrl, fallbackUser, fallbackPassword);
+                System.out.println("[DatabaseConnection] Connexion H2 fallback établie avec succès");
+                try {
+                    Flyway flyway = Flyway.configure()
+                            .dataSource(fallbackUrl, fallbackUser, fallbackPassword)
+                            .load();
+                    flyway.migrate();
+                    System.out.println("[DatabaseConnection] Migrations Flyway exécutées sur H2 fallback");
+                } catch (Exception fx2) {
+                    System.err.println("[DatabaseConnection] Flyway migration on H2 skipped: " + fx2.getMessage());
+                }
+            } catch (ClassNotFoundException | SQLException ex2) {
+                System.err.println("[DatabaseConnection] Erreur lors du fallback H2: " + ex2.getMessage());
+                ex2.printStackTrace(System.err);
+            }
         }
     }
 

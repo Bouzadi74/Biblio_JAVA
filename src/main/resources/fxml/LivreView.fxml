@@ -47,6 +47,7 @@
         <Button text="Supprimer" onAction="#handleSupprimer" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #f44336; -fx-text-fill: white; -fx-border-radius: 3;"/>
         <Button text="Rafraîchir" onAction="#handleRafraichir" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #FF9800; -fx-text-fill: white; -fx-border-radius: 3;"/>
         <Button text="Vider" onAction="#viderChamps" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #757575; -fx-text-fill: white; -fx-border-radius: 3;"/>
+        <Button text="Membres" onAction="#handleMembres" style="-fx-padding: 8 20; -fx-font-size: 12; -fx-background-color: #607D8B; -fx-text-fill: white; -fx-border-radius: 3;"/>
     </HBox>
 
     <!-- Search -->

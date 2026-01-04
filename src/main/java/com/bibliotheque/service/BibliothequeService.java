@@ -305,7 +305,7 @@ public class BibliothequeService {
     public List<String> historiqueEmprunts(Long membreId) {
         if (membreId == null) return Collections.emptyList();
 
-        List<Emprunt> emprunts = empruntDAO.findByMemberId(membreId.intValue());
+        List<Emprunt> emprunts = empruntDAO.findByMemberId(membreId);
         return emprunts.stream()
             .map(e -> "Emprunt du " + e.getDateEmprunt() + (e.getDateRetour() != null ? " retourné le " + e.getDateRetour() : " en cours"))
             .collect(java.util.stream.Collectors.toList());

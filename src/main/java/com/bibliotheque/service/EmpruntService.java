@@ -15,7 +15,7 @@ public class EmpruntService {
         this.dao = dao;
     }
 
-    public void emprunterLivre(int idMembre, int idLivre) throws Exception {
+    public void emprunterLivre(long idMembre, String isbnLivre) throws Exception {
 
         // Règle métier : maximum 3 emprunts en cours
         int nb = dao.countEmpruntsEnCours(idMembre);
@@ -24,27 +24,30 @@ public class EmpruntService {
 
         Emprunt e = new Emprunt();
         e.setIdMembre(idMembre);
-        e.setIdLivre(idLivre);
+        e.setIsbnLivre(isbnLivre);
         e.setDateEmprunt(LocalDate.now());
-        e.setDateRetour(null);
+        e.setDateRetourPrevue(LocalDate.now().plusDays(14)); // 2 semaines
+        e.setStatut("EN_COURS");
 
         dao.save(e);
     }
 
-    public void retournerLivre(int idEmprunt) throws Exception {
+    public void retournerLivre(long idEmprunt) throws Exception {
         Emprunt e = dao.findById(idEmprunt).orElse(null);
         if (e == null)
             throw new Exception("Emprunt introuvable.");
 
-        if (e.getDateRetour() != null)
+        if (e.getDateRetourEffective() != null)
             throw new Exception("Ce livre est déjà retourné.");
 
-        e.setDateRetour(LocalDate.now());
+        e.setDateRetourEffective(LocalDate.now());
+        e.setStatut("RETOURNE");
+
         dao.update(e);
     }
 
     public double calculerPenalite(Emprunt e) {
-        LocalDate dateRetour = (e.getDateRetour() == null) ? LocalDate.now() : e.getDateRetour();
+        LocalDate dateRetour = (e.getDateRetourEffective() == null) ? LocalDate.now() : e.getDateRetourEffective();
 
         long jours = ChronoUnit.DAYS.between(e.getDateEmprunt(), dateRetour);
 

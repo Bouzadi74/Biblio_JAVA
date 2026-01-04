@@ -14,11 +14,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class LivreController implements Initializable {
@@ -219,5 +223,21 @@ public class LivreController implements Initializable {
 		ObservableList<Livre> results = FXCollections.observableArrayList(service.rechercherParTitre(motCle));
 		if (results.isEmpty()) results = FXCollections.observableArrayList(service.rechercherParAuteur(motCle));
 		tableLivres.setItems(results);
+	}
+
+	@FXML
+	void handleMembres(ActionEvent event) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Membre.fxml"));
+			Parent root = loader.load();
+			MembreController controller = loader.getController();
+			controller.setService(service);
+			Stage stage = new Stage();
+			stage.setTitle("Gestion des Membres");
+			stage.setScene(new Scene(root));
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

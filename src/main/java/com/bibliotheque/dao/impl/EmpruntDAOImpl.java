@@ -22,12 +22,14 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public void insert(Emprunt e) {
-        String sql = "INSERT INTO emprunts (id_membre, id_livre, date_emprunt, date_retour) VALUES (?, ?, ?, ?)";
+        // Insert uses schema columns: id_membre, id_livre, date_emprunt, date_retour_prevue, statut
+        String sql = "INSERT INTO emprunts (id_membre, id_livre, date_emprunt, date_retour_prevue, statut) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, e.getIdMembre());
             ps.setInt(2, e.getIdLivre());
             ps.setDate(3, Date.valueOf(e.getDateEmprunt()));
-            ps.setDate(4, e.getDateRetour() == null ? null : Date.valueOf(e.getDateRetour()));
+            ps.setDate(4, e.getDateRetourPrevue() == null ? null : Date.valueOf(e.getDateRetourPrevue()));
+            ps.setString(5, e.getStatut());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -42,7 +44,8 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public Optional<Emprunt> findById(Integer id) {
-        String sql = "SELECT * FROM emprunts WHERE id = ?";
+        // Primary key column is `id_emprunt`
+        String sql = "SELECT * FROM emprunts WHERE id_emprunt = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -86,7 +89,8 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public List<Emprunt> findActiveByBookId(Integer bookId) {
-        String sql = "SELECT * FROM emprunts WHERE id_livre = ? AND date_retour IS NULL";
+        // Active when date_retour_effective IS NULL
+        String sql = "SELECT * FROM emprunts WHERE id_livre = ? AND date_retour_effective IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, bookId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -101,13 +105,16 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public void update(Emprunt e) {
-        String sql = "UPDATE emprunts SET id_membre=?, id_livre=?, date_emprunt=?, date_retour=? WHERE id=?";
+        // Update uses explicit schema columns including planned/effective return dates and statut
+        String sql = "UPDATE emprunts SET id_membre=?, id_livre=?, date_emprunt=?, date_retour_prevue=?, date_retour_effective=?, statut=? WHERE id_emprunt=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, e.getIdMembre());
             ps.setInt(2, e.getIdLivre());
             ps.setDate(3, Date.valueOf(e.getDateEmprunt()));
-            ps.setDate(4, e.getDateRetour() == null ? null : Date.valueOf(e.getDateRetour()));
-            ps.setInt(5, e.getId());
+            ps.setDate(4, e.getDateRetourPrevue() == null ? null : Date.valueOf(e.getDateRetourPrevue()));
+            ps.setDate(5, e.getDateRetourEffective() == null ? null : Date.valueOf(e.getDateRetourEffective()));
+            ps.setString(6, e.getStatut());
+            ps.setInt(7, e.getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -116,7 +123,7 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     @Override
     public void delete(Integer id) {
-        String sql = "DELETE FROM emprunts WHERE id = ?";
+        String sql = "DELETE FROM emprunts WHERE id_emprunt = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -127,7 +134,8 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
 
     public List<Emprunt> findEnCours() {
-        String sql = "SELECT * FROM emprunts WHERE date_retour IS NULL";
+        // Emprunts en cours: date_retour_effective IS NULL and statut = 'EN_COURS'
+        String sql = "SELECT * FROM emprunts WHERE date_retour_effective IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             List<Emprunt> list = new ArrayList<>();
@@ -139,7 +147,7 @@ public class EmpruntDAOImpl implements EmpruntDAO {
     }
 
     public int countEmpruntsEnCours(int idMembre) {
-        String sql = "SELECT COUNT(*) FROM emprunts WHERE id_membre=? AND date_retour IS NULL";
+        String sql = "SELECT COUNT(*) FROM emprunts WHERE id_membre=? AND date_retour_effective IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, idMembre);
             try (ResultSet rs = ps.executeQuery()) {
@@ -153,13 +161,27 @@ public class EmpruntDAOImpl implements EmpruntDAO {
 
     private Emprunt map(ResultSet rs) throws SQLException {
         Emprunt e = new Emprunt();
-        e.setId(rs.getInt("id"));
+        // map id_emprunt -> id
+        e.setId(rs.getInt("id_emprunt"));
         e.setIdMembre(rs.getInt("id_membre"));
-        e.setIdLivre(rs.getInt("id_livre"));
+        // id_livre stored as foreign key referencing livres.isbn -> may be stored as VARCHAR in DB;
+        // keep compatibility: attempt getInt then fallback to parsing string if needed
+        try {
+            e.setIdLivre(rs.getInt("id_livre"));
+        } catch (SQLException ex) {
+            String s = rs.getString("id_livre");
+            if (s != null) {
+                try { e.setIdLivre(Integer.parseInt(s)); } catch (NumberFormatException ignore) {}
+            }
+        }
         Date dEmprunt = rs.getDate("date_emprunt");
         if (dEmprunt != null) e.setDateEmprunt(dEmprunt.toLocalDate());
-        Date dRetour = rs.getDate("date_retour");
-        if (dRetour != null) e.setDateRetour(dRetour.toLocalDate());
+        Date dRetourPrevue = rs.getDate("date_retour_prevue");
+        if (dRetourPrevue != null) e.setDateRetourPrevue(dRetourPrevue.toLocalDate());
+        Date dRetourEffect = rs.getDate("date_retour_effective");
+        if (dRetourEffect != null) e.setDateRetourEffective(dRetourEffect.toLocalDate());
+        String statut = rs.getString("statut");
+        if (statut != null) e.setStatut(statut);
         return e;
     }
 }

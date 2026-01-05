@@ -59,6 +59,8 @@
             <scope>test</scope>
         </dependency>
 
+<<<<<<< HEAD
+=======
         <!-- H2 in-memory database for tests only -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -67,6 +69,7 @@
             <scope>test</scope>
         </dependency>
 
+>>>>>>> 49fcf74a66027e617b8181b2df3cbd3a92e1b786
         <!-- Removed org.mockito:mockito-inline due to missing artifact; mockito-core is used for tests. -->
     </dependencies>
 

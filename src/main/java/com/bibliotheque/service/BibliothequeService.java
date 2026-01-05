@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.bibliotheque.dao.EmpruntDAO;
-import com.bibliotheque.dao.EmpruntDAOImpl;
+import com.bibliotheque.dao.impl.EmpruntDAOImpl;
 import com.bibliotheque.dao.LivreDAO;
 import com.bibliotheque.dao.MembreDAO;
 import com.bibliotheque.dao.impl.LivreDAOImpl;
@@ -271,9 +271,12 @@ public class BibliothequeService {
 
     public List<Membre> listerMembres() {
         try {
-            return membreDAO.findAll();
+            List<Membre> membres = membreDAO.findAll();
+            System.out.println("[BibliothequeService] Nombre de membres chargés: " + membres.size());
+            return membres;
         } catch (SQLException e) {
             System.err.println("Erreur lors du listing membres: " + e.getMessage());
+            e.printStackTrace();
             return new java.util.ArrayList<>();
         }
     }
@@ -301,10 +304,50 @@ public class BibliothequeService {
     public List<String> historiqueEmprunts(Long membreId) {
         if (membreId == null) return Collections.emptyList();
 
-        List<Emprunt> emprunts = empruntDAO.findByMemberId(membreId);
-        return emprunts.stream()
-            .map(e -> "Emprunt du " + e.getDateEmprunt() + (e.getDateRetour() != null ? " retourné le " + e.getDateRetour() : " en cours"))
-            .collect(java.util.stream.Collectors.toList());
+        try {
+            List<Emprunt> emprunts = empruntDAO.findByMemberId(membreId);
+            return emprunts.stream()
+                .map(e -> {
+                    String livreInfo = "";
+                    // Try to get book title from ISBN first
+                    if (e.getIsbnLivre() != null && !e.getIsbnLivre().isEmpty()) {
+                        try {
+                            Livre livre = livreDAO.findById(e.getIsbnLivre());
+                            if (livre != null) {
+                                livreInfo = livre.getTitre() + " - ";
+                            }
+                        } catch (SQLException ignored) {
+                            // If we can't get the book, continue without title
+                        }
+                    }
+                    // If no ISBN but we have id_livre, show the ID
+                    if (livreInfo.isEmpty() && e.getIdLivre() != null) {
+                        livreInfo = "Livre ID: " + e.getIdLivre() + " - ";
+                    }
+                    
+                    String dateInfo = e.getDateEmprunt() != null ? e.getDateEmprunt().toString() : "Date inconnue";
+                    String retourInfo = "";
+                    if (e.getDateRetourEffective() != null) {
+                        retourInfo = " retourné le " + e.getDateRetourEffective().toString();
+                    } else if (e.getDateRetour() != null) {
+                        retourInfo = " retourné le " + e.getDateRetour().toString();
+                    } else {
+                        retourInfo = " (en cours)";
+                    }
+                    
+                    // Add status if available
+                    if (e.getStatut() != null && !e.getStatut().isEmpty()) {
+                        retourInfo += " [" + e.getStatut() + "]";
+                    }
+                    
+                    return livreInfo + "Emprunt du " + dateInfo + retourInfo;
+                })
+                .collect(java.util.stream.Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la récupération de l'historique: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     private void validerMembre(Membre m) throws ValidationException {

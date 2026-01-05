@@ -2,10 +2,12 @@ package com.bibliotheque.controller;
 
 import com.bibliotheque.model.Membre;
 import com.bibliotheque.service.BibliothequeService;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
 
@@ -42,8 +44,24 @@ public class MembreController {
 
     @FXML
     public void initialize() {
-        // Ici tu peux configurer les colonnes dans le FXML aussi.
-        // On garde minimal pour respecter "pas trop de logique".
+        // Configure cell value factories for table columns
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        nomCol.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        prenomCol.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+        emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
+        actifCol.setCellValueFactory(cell -> new SimpleBooleanProperty(cell.getValue().isActif()));
+        actifCol.setCellFactory(tc -> new TableCell<Membre, Boolean>() {
+            @Override
+            protected void updateItem(Boolean actif, boolean empty) {
+                super.updateItem(actif, empty);
+                if (empty || actif == null) {
+                    setText(null);
+                } else {
+                    setText(actif ? "Oui" : "Non");
+                }
+            }
+        });
+
         membresTable.setItems(membresData);
 
         membresTable.getSelectionModel().selectedItemProperty().addListener((obs, oldV, selected) -> {
@@ -166,9 +184,28 @@ public class MembreController {
     // ======================
 
     private void chargerHistorique(Long membreId) {
-        if (service == null || membreId == null) return;
-        List<String> hist = service.historiqueEmprunts(membreId);
-        historiqueList.getItems().setAll(hist);
+        if (service == null || membreId == null) {
+            if (historiqueList != null) {
+                historiqueList.getItems().clear();
+            }
+            return;
+        }
+        try {
+            List<String> hist = service.historiqueEmprunts(membreId);
+            if (historiqueList != null) {
+                if (hist.isEmpty()) {
+                    historiqueList.getItems().setAll("Aucun emprunt pour ce membre");
+                } else {
+                    historiqueList.getItems().setAll(hist);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de l'historique: " + e.getMessage());
+            e.printStackTrace();
+            if (historiqueList != null) {
+                historiqueList.getItems().setAll("Erreur lors du chargement de l'historique");
+            }
+        }
     }
 
     // ======================

@@ -12,7 +12,7 @@ import com.bibliotheque.model.Membre;
 public class MembreDAOImplTest {
 
     @Test
-    void saveFindUpdateDelete() {
+    void saveFindUpdateDelete() throws Exception {
         MembreDAOImpl dao = new MembreDAOImpl();
         Membre m = new Membre( null, "Dupont", "Jean", "j.dupont@example.com", true, "0123456789", "Rue" );
         dao.save(m);

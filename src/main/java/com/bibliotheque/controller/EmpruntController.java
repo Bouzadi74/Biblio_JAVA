@@ -23,10 +23,10 @@ public class EmpruntController {
     @FXML
     public void formulaireEmprunt() {
         try {
-            int idMembre = Integer.parseInt(txtIdMembre.getText());
-            int idLivre = Integer.parseInt(txtIdLivre.getText());
+            long idMembre = Long.parseLong(txtIdMembre.getText());
+            String isbnLivre = txtIdLivre.getText();
 
-            service.emprunterLivre(idMembre, idLivre);
+            service.emprunterLivre(idMembre, isbnLivre);
             lblMessage.setText("Livre emprunté avec succès !");
         } 
         catch (Exception ex) {

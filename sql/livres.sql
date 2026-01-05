@@ -69,7 +69,8 @@ FROM livres
 ORDER BY titre ASC;
 
 -- Afficher les livres par auteur (exemple: Tolkien)
--- SELECT * FROM livres WHERE auteur LIKE '%Tolkien%' ORDER BY titre ASC;
+-- SELECT * FROM livres WHERE auteur L
+IKE '%Tolkien%' ORDER BY titre ASC;
 
 -- ============================================================================
 -- Notes d'utilisation

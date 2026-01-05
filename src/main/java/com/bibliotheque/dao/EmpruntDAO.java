@@ -7,11 +7,11 @@ import com.bibliotheque.model.Emprunt;
 /**
  * DAO interface for Loan entity
  */
-public interface EmpruntDAO extends GenericDAO<Emprunt, Integer> {
-    List<Emprunt> findByMemberId(Integer memberId);
-    List<Emprunt> findActiveByBookId(Integer bookId);
+public interface EmpruntDAO extends GenericDAO<Emprunt, Long> {
+    List<Emprunt> findByMemberId(Long memberId);
+    List<Emprunt> findActiveByBookIsbn(String isbn);
    
-    int countEmpruntsEnCours(int idMembre);
+    int countEmpruntsEnCours(long idMembre);
     List<Emprunt> findEnCours();
     void save(Emprunt e);
     

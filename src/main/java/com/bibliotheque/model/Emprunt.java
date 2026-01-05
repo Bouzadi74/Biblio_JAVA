@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class Emprunt {
-    private int id;
+    private long id;
     private String titreLivre;
     private String nomMembre;
     private LocalDate dateEmprunt;
@@ -13,11 +13,12 @@ public class Emprunt {
     private double penalite;
     private String statut; // "EN_COURS", "RETOURNE", "EN_RETARD"
     // Compatibility fields for older DAO/service implementations
-    private Integer idMembre;
+    private Long idMembre;
+    private String isbnLivre;
     private Integer idLivre;
 
     // Constructeur complet
-    public Emprunt(int id, String titreLivre, String nomMembre, 
+    public Emprunt(long id, String titreLivre, String nomMembre, 
                    LocalDate dateEmprunt, LocalDate dateRetourPrevue, 
                    LocalDate dateRetourEffective, double penalite, String statut) {
         this.id = id;
@@ -46,11 +47,11 @@ public class Emprunt {
     }
 
     // Getters et Setters
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -104,12 +105,25 @@ public class Emprunt {
         if (dateRetour != null) this.statut = "RETOURNE";
     }
 
-    public Integer getIdMembre() {
+    public Long getIdMembre() {
         return idMembre;
     }
 
-    public void setIdMembre(Integer idMembre) {
+    public void setIdMembre(Long idMembre) {
         this.idMembre = idMembre;
+    }
+
+    // compatibility overload to accept primitive int in tests/legacy code
+    public void setIdMembre(int idMembre) {
+        this.idMembre = Long.valueOf(idMembre);
+    }
+
+    public String getIsbnLivre() {
+        return isbnLivre;
+    }
+
+    public void setIsbnLivre(String isbnLivre) {
+        this.isbnLivre = isbnLivre;
     }
 
     public Integer getIdLivre() {
@@ -118,6 +132,11 @@ public class Emprunt {
 
     public void setIdLivre(Integer idLivre) {
         this.idLivre = idLivre;
+    }
+
+    // compatibility overload for tests that use primitive int
+    public void setIdLivre(int idLivre) {
+        this.idLivre = Integer.valueOf(idLivre);
     }
 
     public double getPenalite() {
